@@ -58,7 +58,7 @@
 		<div id=" dheader"
 			class="sticky top-0 z-50 mx-auto w-full bg-gray-400 bg-opacity-70 px-2 py-5 backdrop-blur-lg transition-all duration-300">
 			<nav class="flex w-full items-center justify-between">
-				<a href="javascript:history.back()" class="flex h-14 w-fit items-center px-1 text-lg font-bold md:h-16">
+				<a href="/" class="flex h-14 w-fit items-center px-1 text-lg font-bold md:h-16">
 					<ion-icon class="mx-1 text-3xl" name="chevron-back"></ion-icon>
 					<span class="hidden md:block">Back</span>
 				</a>

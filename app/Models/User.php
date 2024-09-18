@@ -23,6 +23,7 @@
 			'password',
 			'usertype',
 			'photo',
+			'email_verified_at',
 			'otp',
 			'otp_expires_at'
 		];

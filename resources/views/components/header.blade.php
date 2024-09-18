@@ -34,7 +34,7 @@
 				</button>
 			</form>
 		@endauth
-		<div class="flex items-center gap-2">
+		<div class="flex items-center gap-2 ">
 			<ion-icon id="menu-icon" name="menu" class="cursor-pointer text-3xl md:hidden"
 					onclick="toggleMenu()"></ion-icon>
 			@guest

@@ -20,11 +20,11 @@
 			$services = Service::query();
 
 			if ($categoryId) {
-				$services->where('category_id', $categoryId)->orderBy('created_at', 'desc');
+				$services->where('category_id', $categoryId)->orderBy('created_at', 'asc');
 			}
 
 			// Use paginate() to get the total count
-			$services = $services->orderBy('created_at', 'desc')->paginate(3)->appends(['category' => $categoryId]);
+			$services = $services->orderBy('created_at', 'asc')->paginate(3)->appends(['category' => $categoryId]);
 
 			$categories = Category::all();
 
@@ -214,7 +214,7 @@
 					->orWhere('details', 'like', "%$search%");
 			})->orWhereHas('freelancer', function ($query) use ($search) {
 				$query->where('name', 'like', "%$search%");
-			})->paginate(5); // Add pagination here with a limit, e.g., 10 per page
+			})->paginate(6); // Add pagination here with a limit, e.g., 10 per page
 
 			$categories = Category::all();
 			$totalCount = $services->total();
