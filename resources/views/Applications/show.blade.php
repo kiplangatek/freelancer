@@ -2,7 +2,7 @@
 	<section class="body-font mt-16 w-full items-center px-6 py-10">
 		<div class="z-40 mx-auto mt-4 flex w-[95%] transform items-center gap-1">
 			<div>
-				<a href="javascript:history.back()"
+				<a href="/my"
 				   class="flex h-14 w-fit items-center rounded-lg bg-blue-200 bg-opacity-60 px-1 text-lg font-bold backdrop-blur-lg hover:bg-opacity-70 md:h-16">
 					<ion-icon class="mx-1 text-2xl" name="chevron-back-circle-outline"></ion-icon>
 					<span class="hidden md:block">Back</span>

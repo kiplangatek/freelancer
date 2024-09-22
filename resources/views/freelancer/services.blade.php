@@ -49,7 +49,7 @@
 		</ol>
 	</nav>
 
-	<div class="container mx-auto">
+	<div class=" mx-auto">
 		<div class="mb-4 text-center">
 			<img width="70px" height="70px" class="mx-auto mb-2 h-20 w-20 rounded-full"
 			     src="{{ asset('storage/avatars/' . $freelancer->photo) }}" alt="{{ $freelancer->name }}">
@@ -64,11 +64,11 @@
 			<p class="text-lg text-gray-600">{{ $freelancer->email }}</p>
 		</div>
 		<!-- Services List -->
-		<div class="mx-auto grid grid-cols-1 gap-0.5 md:grid-cols-2 md:gap-6 lg:grid-cols-2 xl:grid-cols-2">
+		<div class="mx-auto grid grid-cols-1 md:grid-cols-2 gap-1 lg:grid-cols-3 xl:grid-cols-4">
 			@forelse($services as $service)
 				<div class="p-4">
 					<div class="overflow-hidden rounded-lg bg-gray-100 shadow-lg">
-						<div class="h-[150px] w-full bg-red-100 md:h-[200px] lg:max-h-60">
+						<div class="h-[150px] w-full bg-red-100 md:h-48">
 							<img class="h-full w-full object-cover"
 							     src="{{ asset('storage/services/' . $service->image) }}"
 							     alt="{{ $service->title }}">

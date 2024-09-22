@@ -12,6 +12,7 @@
 	use App\Http\Controllers\RatingController;
 	use App\Http\Controllers\RegisterController;
 	use App\Http\Controllers\ServiceController;
+	use App\Http\Controllers\MessageController;
 	use Illuminate\Support\Facades\Route;
 
 
@@ -53,6 +54,10 @@
 		Route::get('/profile', [RegisterController::class, 'profile'])->name('profile');
 		Route::patch('/profile/{id}', [RegisterController::class, 'update'])->name('profile.edit');
 		Route::get('/my', [ServiceController::class, 'my'])->name('services.my');
+		Route::get('/chat/{user}', [MessageController::class, 'show'])->name('chat.show');
+		Route::post('/messages', [MessageController::class, 'store'])->name('messages.store');
+		Route::post('/messages/mark-as-read', [MessageController::class, 'markAsRead'])->name('messages.markAsRead');
+		Route::get('/messages', [MessageController::class, 'index'])->name('messages.index');
 	});
 
 	//Admin Routes

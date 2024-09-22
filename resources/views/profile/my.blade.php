@@ -74,8 +74,17 @@
 			</nav>
 		</div>
 		<div class="mt-4 px-4 md:px-12">
-			<div class="h-24 w-24 overflow-hidden rounded-full bg-gray-300">
-				<img class="h-full w-full" src="{{ asset('storage/avatars/' . Auth::user()->photo) }}" alt="">
+			<div class="flex justify-between">
+
+				<div class="h-24 w-24 overflow-hidden rounded-full bg-gray-300">
+					<img class="h-full w-full" src="{{ asset('storage/avatars/' . Auth::user()->photo) }}" alt="">
+				</div>
+				<div>
+					<a href="/messages" class="text-2xl text-blue-500">
+						<ion-icon name="chatbubble-ellipses-outline" size="large"></ion-icon>
+					</a>
+				</div>
+
 			</div>
 			<div class="flex items-center justify-between">
 				<div>
