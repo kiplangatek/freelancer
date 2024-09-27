@@ -73,18 +73,25 @@
 				</form>
 			</nav>
 		</div>
-		<div class="mt-4 px-4 md:px-12">
+		<div class=" px-4 md:px-12 bg-gray-300 py-4">
 			<div class="flex justify-between">
-
 				<div class="h-24 w-24 overflow-hidden rounded-full bg-gray-300">
 					<img class="h-full w-full" src="{{ asset('storage/avatars/' . Auth::user()->photo) }}" alt="">
 				</div>
-				<div>
-					<a href="/messages" class="text-2xl text-blue-500">
-						<ion-icon name="chatbubble-ellipses-outline" size="large"></ion-icon>
-					</a>
-				</div>
+				<div class="relative">
+					<div class="relative">
+						@if ($unreadCount > 0)
+							<span
+								class="absolute -top-[5px] -right-[5px] bg-red-500 text-white text-xs h-5 w-5 font-bold rounded-full z-10 flex items-center justify-center">
+							   {{ $unreadCount > 9 ? '9+' : $unreadCount }}
+						    </span>
+						@endif
 
+						<a href="/messages" class="text-2xl text-blue-600">
+							<ion-icon name="chatbubble-ellipses-outline" size="large"></ion-icon>
+						</a>
+					</div>
+				</div>
 			</div>
 			<div class="flex items-center justify-between">
 				<div>
@@ -92,29 +99,29 @@
 						<h2 class="mt-4 text-lg font-bold">{{ Auth::user()->name }}</h2>
 						@if (Auth::user()->verified)
 							<span class="p1 h-4 w-4 items-center text-lg font-bold text-blue-500"><ion-icon
-									name="checkmark-done"></ion-icon> </span>
-							@if (Auth::user()->usertype !== 'admin')
-								@php
-									$bgColor = 'bg-gray-300';
-									if ($averageRating >= 4) {
-									    $bgColor = 'bg-green-300';
-									} elseif ($averageRating >= 3) {
-									    $bgColor = 'bg-yellow-300';
-									} elseif ($averageRating >= 2) {
-									    $bgColor = 'bg-gray-300';
-									} elseif ($averageRating >= 1) {
-									    $bgColor = 'bg-red-200';
-									}
-								@endphp
-								<span
-									class="align-self-baseline {{ $bgColor }} ml-2 flex items-center rounded-md p-1 text-sm text-gray-800">
+									name="checkmark-done-circle"></ion-icon> </span>
+						@endif
+						@if (Auth::user()->usertype !== 'admin')
+							@php
+								$bgColor = 'bg-gray-300';
+								if ($averageRating >= 4) {
+								    $bgColor = 'bg-green-300';
+								} elseif ($averageRating >= 3) {
+								    $bgColor = 'bg-yellow-300';
+								} elseif ($averageRating >= 2) {
+								    $bgColor = 'bg-gray-300';
+								} elseif ($averageRating >= 1) {
+								    $bgColor = 'bg-red-200';
+								}
+							@endphp
+							<span
+								class="align-self-baseline {{ $bgColor }} ml-2 flex items-center rounded-md p-1 text-sm text-gray-800">
                                  {{ $averageRating }} <ion-icon name="star"></ion-icon>
                               </span>
-							@endif
-
 						@endif
 					</div>
-					<p class="text-sm text-gray-600">{{ Auth::user()->email }}</p>
+					<p class="text-sm text-gray-600 flex items-center">
+						<ion-icon name="at"></ion-icon>{{ Auth::user()->username }}</p>
 				</div>
 				<a href="{{ route('profile') }}"
 				   class="mt-4 inline-block rounded-lg bg-blue-300 px-4 py-2 text-center text-white">
@@ -124,7 +131,7 @@
 			</div>
 		</div>
 	</div>
-	<div class="px-6 py-10 md:px-8">
+	<div class="px-6 py-6 md:px-8">
 		<div class="container relative">
 			<div class="mb-4 overflow-x-auto">
 				@if(Auth::user()->usertype!=='admin')

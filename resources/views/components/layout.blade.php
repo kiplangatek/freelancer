@@ -19,7 +19,7 @@
 	<link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css">
 </head>
 
-<body class="h-full bg-gray-400 font-inter">
+<body class="h-full bg-gray-200 font-inter">
 <x-header></x-header>
 <div class="mx-auto w-full">
 	{{ $slot }}

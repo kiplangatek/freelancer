@@ -4,7 +4,7 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport"
-	      content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+		 content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
 	<meta http-equiv="X-UA-Compatible" content="ie=edge">
 	<link rel="apple-touch-icon" sizes="180x180" href="{{ asset('storage/ui/apple-touch-icon.png') }}">
 	<link rel="icon" type="image/png" sizes="32x32" href="{{ asset('storage/ui/favicon-32x32.png') }}">
@@ -12,7 +12,7 @@
 	<link rel="manifest" href="{{ asset('storage/ui/site.webmanifest') }}">
 
 	@vite(['resources/css/app.css'])
-	<script src="https:cdn.tailwindcss.com"></script>
+	<script src="https://cdn.tailwindcss.com"></script>
 	<title>Services by {{ $freelancer->name }}</title>
 	<script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
 	<script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
@@ -29,7 +29,7 @@
 	@endphp
 @endauth
 <x-header></x-header>
-<section class="body-font mt-14 bg-gray-400 px-3 py-10 text-gray-600">
+<section class="body-font mt-16 bg-gray-400 px-3 py-10 text-gray-600">
 	<nav class="mb-5 flex items-center">
 		<ol class="list-reset flex items-center text-lg text-gray-700">
 			<li>
@@ -50,18 +50,35 @@
 	</nav>
 
 	<div class=" mx-auto">
-		<div class="mb-4 text-center">
-			<img width="70px" height="70px" class="mx-auto mb-2 h-20 w-20 rounded-full"
-			     src="{{ asset('storage/avatars/' . $freelancer->photo) }}" alt="{{ $freelancer->name }}">
-			<div class="items center mx-auto flex w-full items-center justify-center">
-				<h1 class="text-2xl font-semibold">
-					{{ $freelancer->name }}
-				</h1>
-				@if ($freelancer->verified == true)
-					<img width="20px" src="{{ asset('storage/ui/verified.png') }}" alt="verified"/>
-				@endif
+
+		<!-- Freelancer Info -->
+		<div class="flex items-start bg-white rounded-lg shadow-lg p-4 md:p-6 mb-6 ">
+			<div class="h24 w-24">
+				<img class="h-24 w-full rounded-full mb-4"
+					src="{{ asset('storage/avatars/' . $freelancer->photo) }}"
+					alt="{{ $freelancer->name }}">
 			</div>
-			<p class="text-lg text-gray-600">{{ $freelancer->email }}</p>
+			<div class="ml-3 flex-1">
+				<div class="flex items-center">
+					<h1 class="text-xl md:text-2xl font-bold uppercase ">{{ $freelancer->name }}</h1>
+					@if ($freelancer->verified == true)
+						<img class="h-5" src="{{ asset('storage/ui/verified.png') }}" alt="verified">
+					@endif
+				</div>
+				<p class="text-sm text-gray-500 flex items-center mb-2">
+					<ion-icon name="at"></ion-icon>{{ $freelancer->username }}</p>
+				<div class="flex items-center justify-between">
+					<p class="text-base md:text-lg font-semibold mb-3 flex items-center p-1 rounded-xl bg-blue-200 w-fit">
+						<ion-icon name="star"
+								class="text-yellow-600 text-lg mr-1"></ion-icon>{{ number_format($averageRating, 1) }}
+						({{$allRatings}})
+					</p>
+					<a class="mb-3 rounded-lg bg-blue-200 text-grey-700 px-2 py-1 border border-blue-500 flex items-center"
+					   href="/chat/{{$freelancer->id}}">
+						<ion-icon name="mail-outline" class="mr-0.5"></ion-icon>
+						Message</a>
+				</div>
+			</div>
 		</div>
 		<!-- Services List -->
 		<div class="mx-auto grid grid-cols-1 md:grid-cols-2 gap-1 lg:grid-cols-3 xl:grid-cols-4">
@@ -70,8 +87,8 @@
 					<div class="overflow-hidden rounded-lg bg-gray-100 shadow-lg">
 						<div class="h-[150px] w-full bg-red-100 md:h-48">
 							<img class="h-full w-full object-cover"
-							     src="{{ asset('storage/services/' . $service->image) }}"
-							     alt="{{ $service->title }}">
+								src="{{ asset('storage/services/' . $service->image) }}"
+								alt="{{ $service->title }}">
 						</div>
 						<div class="px-2 py-4">
 							<div class="flex justify-between">
@@ -100,12 +117,12 @@
 		</div>
 	</div>
 	<div id="ratingModal"
-	     class="fixed inset-0 z-50 flex hidden items-center justify-center bg-black bg-opacity-50 p-2">
+		class="fixed inset-0 z-50 flex hidden items-center justify-center bg-black bg-opacity-50 p-2">
 		<div class="w-full max-w-md rounded-lg bg-gray-300 p-6 shadow-lg">
 			<div class="mb-4 flex items-center justify-between">
 				<h5 class="text-lg font-bold">Rate This Freelancer</h5>
 				<button type="button" class="text-2xl text-gray-500 hover:text-gray-700"
-				        onclick="closeRatingModal()">
+					   onclick="closeRatingModal()">
 					<ion-icon name="close"></ion-icon>
 				</button>
 			</div>
@@ -120,8 +137,8 @@
 
 					<label for="service_id" class="mb-2 block font-medium text-gray-700">Select Service:</label>
 					<select name="service_id" id="service_id"
-					        class="form-select mt-1 block h-8 w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-					        required>
+						   class="form-select mt-1 block h-8 w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+						   required>
 						<option value="" disabled selected>Select a service</option>
 						@foreach ($freelancer->services as $service)
 							<option value="{{ $service->id }}">{{ $service->title }}</option>
@@ -130,8 +147,8 @@
 
 					<label for="rating" class="mb-2 block font-medium text-gray-700">Rating (1-5):</label>
 					<select name="rating" id="rating"
-					        class="form-select mt-1 block h-8 w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-					        required>
+						   class="form-select mt-1 block h-8 w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+						   required>
 						<option value="" disabled selected>Select a rating</option>
 						<option value="1">1 Star</option>
 						<option value="2">2 Stars</option>
@@ -145,8 +162,8 @@
 				<div class="mb-4">
 					<label for="comments" class="mb-2 block font-medium text-gray-700">Comments:</label>
 					<textarea name="comments" id="comments"
-					          class="form-textarea mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-					          rows="4" required></textarea>
+							class="form-textarea mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+							rows="4" required></textarea>
 				</div>
 
 				<!-- Submit button -->
@@ -160,8 +177,8 @@
 		@if (!$hasRated && !$isSelf && $hasService && !$isAdmin)
 			<!-- Button to open the rating modal -->
 			<button type="button"
-			        class="fixed bottom-3 right-3 rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
-			        onclick="openRatingModal({{ $freelancer->id }})">
+				   class="fixed bottom-3 right-3 rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+				   onclick="openRatingModal({{ $freelancer->id }})">
 				Rate Me
 			</button>
 		@endif
@@ -175,8 +192,8 @@
 					{{ number_format($averageRating, 1) }} / 5
 					<span class="text-yellow-500">
                         @php
-	                        $roundedRating = round($averageRating * 2) / 2; // Round to the nearest half star
-                        @endphp
+					    $roundedRating = round($averageRating * 2) / 2; // Round to the nearest half star
+				    @endphp
 						@for ($i = 1; $i <= 5; $i++)
 							@if ($i <= floor($roundedRating))
 								<ion-icon name="star"></ion-icon>
@@ -216,8 +233,8 @@
                            </span>
 							<span class="ml-2 text-yellow-500">
                               @php
-	                              $roundedRating = round($ratingValue * 2) / 2; // Round to the nearest half star
-                              @endphp
+							$roundedRating = round($ratingValue * 2) / 2; // Round to the nearest half star
+						@endphp
 								@for ($i = 1; $i <= 5; $i++)
 									@if ($i <= floor($roundedRating))
 										<ion-icon name="star"></ion-icon>
@@ -248,15 +265,15 @@
 <script>
 	function openRatingModal(freelancerId) {
 		// Set the freelancer_id in the hidden input
-		document.getElementById('freelancer_id').value = freelancerId;
+		document.getElementById('freelancer_id').value = freelancerId
 
 		// Show the modal
-		document.getElementById('ratingModal').classList.remove('hidden');
+		document.getElementById('ratingModal').classList.remove('hidden')
 	}
 
 	function closeRatingModal() {
 		// Hide the modal
-		document.getElementById('ratingModal').classList.add('hidden');
+		document.getElementById('ratingModal').classList.add('hidden')
 	}
 </script>
 </body>

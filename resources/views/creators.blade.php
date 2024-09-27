@@ -16,7 +16,6 @@
 								alt="{{ $freelancer->name }}"
 								class="h-full w-full object-cover rounded-2xl"> <!-- Semi-rounded corners -->
 						</div>
-
 						<!-- Freelancer Info -->
 						<div>
 							<div class="flex items-center">
@@ -25,19 +24,20 @@
 								@if($freelancer->verified)
 									<span class="text-blue-500">
                             <ion-icon name="checkmark-circle" class="text-blue-500"></ion-icon>
-                        </span>
+					    </span>
 								@elseif($freelancer->suspended)
 									<span class="text-yellow-500">
-                            <ion-icon name="alert-circle" class="text-yellow-500"></ion-icon>
-                        </span>
+						   <ion-icon name="alert-circle" class="text-yellow-500"></ion-icon>
+					    </span>
 								@endif
 							</div>
-							<p class="text-sm text-gray-500">{{ $freelancer->email }}</p>
+							<p class="text-sm text-gray-500 flex items-center">
+								<ion-icon name="at"></ion-icon>{{ $freelancer->username }}</p>
 						</div>
 					</div>
 
 					<!-- Projects and Rating -->
-					<div class="flex justify-between items-center mt-4">
+					<div class="flex justify-between items-center mt-3">
 						<!-- Project Count -->
 						@php
 							$projectCount = $freelancer->services->count();
@@ -45,11 +45,10 @@
 						<div>
 							<p class="text-sm text-gray-500">Projects</p>
 							<span class="font-black">
-                    {{ $projectCount }}
-                </span>
+                    				{{ $projectCount }}
+                				</span>
 						</div>
 
-						<!-- Rating (Example hardcoded, can be dynamically replaced) -->
 						<div>
 							<p class="text-sm text-gray-500">Rating</p>
 							<span class="font-black flex items-center">
@@ -59,13 +58,13 @@
 					</div>
 
 					<!-- Action Buttons -->
-					<div class="flex justify-between mt-6">
+					<div class="flex justify-between mt-3">
 						<a href="{{ route('freelancer.services', $freelancer->id) }}">
 							<button class="bg-blue-600 text-white py-2 px-4 rounded-lg">
-								Hire now
+								Catalogue
 							</button>
 						</a>
-						<a href="{{ route('chat.show', $freelancer->id) }}"> <!-- Link to Chat Route -->
+						<a href="{{ route('chat.show', $freelancer->id) }}">
 							<button class="bg-gray-200 text-gray-800 py-2 px-4 rounded-lg">
 								Message
 							</button>

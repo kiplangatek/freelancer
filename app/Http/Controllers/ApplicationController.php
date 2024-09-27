@@ -53,9 +53,7 @@
 
 			// Check if the freelancer who owns the service is suspended
 			if ($service->freelancer->suspended) {
-				return redirect()->back()->withErrors([
-					'apply' => 'Cannot apply: the owner is currently suspended.',
-				]);
+				return redirect()->back()->with('error', 'Cannot apply: the owner is currently suspended.');
 			}
 			// Create a new application record
 			Application::create([

@@ -3,23 +3,29 @@
 <head>
 	<title>New Application Notification</title>
 	<style>
-
-		@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+		@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;400;700&display=swap');
 
 		body {
 			font-family: 'Inter', sans-serif;
 			background-color: #f4f4f4;
 			margin: 0;
-			padding:6px;
+			padding: 0;
+		}
+
+		.wrapper {
+			width: 100%;
+			table-layout: fixed;
+			background-color: #f4f4f4;
+			padding: 20px 0;
 		}
 
 		.email-container {
 			background-color: #ffffff;
-			border: none;
 			border-radius: 10px;
-			max-width: 85%;
+			max-width: 600px;
+			width: 100%;
 			margin: 0 auto;
-			padding: 10px;
+			padding: 0;
 			box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 			overflow: hidden;
 		}
@@ -38,6 +44,11 @@
 			font-weight: bold;
 		}
 
+		.content-wrapper {
+			padding: 20px;
+			text-align: left;
+		}
+
 		h3 {
 			margin: 0;
 			font-size: 20px;
@@ -46,7 +57,7 @@
 
 		p {
 			font-size: 16px;
-			line-height: 1.2;
+			line-height: 1.5;
 			color: #7f8c8d;
 		}
 
@@ -72,17 +83,13 @@
 			font-size: 14px;
 			color: #bdc3c7;
 			text-align: center;
-		}
-
-		.content-wrapper {
-			padding: 16px;
+			padding: 20px;
 		}
 
 		/* Add responsiveness */
-		@media (max-width: 550px) {
+		@media (max-width: 600px) {
 			.email-container {
 				width: 100% !important;
-				padding: 15px !important;
 			}
 
 			h1 {
@@ -100,20 +107,22 @@
 	</style>
 </head>
 <body>
-<div class="email-container">
-	<div class="header">
-		<h1>New Application Notification</h1>
-	</div>
-	<div class="content-wrapper">
-		<h3>Dear {{ $service->freelancer->name }},</h3>
-		<p>You have received a new application for your service:</p>
-		<p><strong>Service Name:</strong> {{ $service->title }}</p>
-		<p><strong>Applicant Name:</strong> {{ Auth::user()->name }}</p>
-		<p>Please log in to your account to view and respond to the application.</p>
-		<a href="http://freelancer.test/my" class="cta">View Application</a>
-	</div>
-	<div class="footer">
-		<p>&copy; {{ date('Y') }} FCS. All rights reserved.</p>
+<div class="wrapper">
+	<div class="email-container">
+		<div class="header">
+			<h1>New Application Notification</h1>
+		</div>
+		<div class="content-wrapper">
+			<h3>Dear {{ $service->freelancer->name }},</h3>
+			<p>You have received a new application for your service:</p>
+			<p><strong>Service Name:</strong> {{ $service->title }}</p>
+			<p><strong>Applicant Name:</strong> {{ Auth::user()->name }}</p>
+			<p>Please log in to your account to view and respond to the application.</p>
+			<a href="http://freelancer.test/my" class="cta">View Application</a>
+		</div>
+		<div class="footer">
+			<p>&copy; {{ date('Y') }} FCS. All rights reserved.</p>
+		</div>
 	</div>
 </div>
 </body>

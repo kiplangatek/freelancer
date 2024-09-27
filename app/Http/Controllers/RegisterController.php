@@ -10,6 +10,9 @@
 	use Illuminate\Validation\Rules\Password;
 	use Random\RandomException;
 	use Illuminate\Support\Facades\Hash;
+	use Illuminate\Validation\Rule;
+	use Illuminate\Support\Facades\DB;
+
 
 	class RegisterController extends Controller
 	{
@@ -27,6 +30,17 @@
 		{
 			$request->validate([
 				'name' => ['required'],
+				'username' => ['required', 'string', 'max:255', 'regex:/^[a-zA-Z0-9]+$/',
+					function ($attribute, $value, $fail) {
+						// Check if the username exists in a case-insensitive way, excluding the current user
+						$exists = DB::table('users')
+							->whereRaw('LOWER(username) = ?', [strtolower($value)])
+							->exists();
+						if ($exists) {
+							$fail('The ' . $attribute . ' has already been taken.');
+						}
+					},
+				],
 				'email' => ['required', 'email', 'max:254', 'unique:users,email'],
 				'usertype' => ['required'],
 				'photo' => ['required', 'mimes:png,jpg,webp,jpeg'],
@@ -72,6 +86,22 @@
 			// Validate the incoming request data
 			$request->validate([
 				'name' => ['nullable'],
+				'username' => ['required',
+					'string',
+					'max:255',
+					'regex:/^[a-zA-Z0-9]+$/',
+					function ($attribute, $value, $fail) use ($userId) {
+						// Check if the username exists in a case-insensitive way, excluding the current user
+						$exists = DB::table('users')
+							->whereRaw('LOWER(username) = ?', [strtolower($value)])
+							->where('id', '!=', $userId)
+							->exists();
+
+						if ($exists) {
+							$fail('The ' . $attribute . ' has already been taken.');
+						}
+					},
+				],
 				'email' => ['nullable', 'email', 'max:254', 'unique:users,email,' . $userId],
 				'photo' => ['nullable', 'mimes:png,jpg,webp,jpeg'],
 			]);
@@ -102,12 +132,13 @@
 			}
 
 			// Only update the fields that are present in the request
-			$user->update(array_filter($request->only(['name', 'email', 'photo']), function ($value) {
+			$user->update(array_filter($request->only(['name', 'username', 'email', 'photo']), function ($value) {
 				return !is_null($value) && $value !== '';
 			}));
 
 			// Redirect or return a response
 			return redirect()->route('profile')->with('success', 'Profile updated successfully.');
 		}
+
 
 	}

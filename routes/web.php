@@ -56,8 +56,8 @@
 		Route::get('/my', [ServiceController::class, 'my'])->name('services.my');
 		Route::get('/chat/{user}', [MessageController::class, 'show'])->name('chat.show');
 		Route::post('/messages', [MessageController::class, 'store'])->name('messages.store');
-		Route::post('/messages/mark-as-read', [MessageController::class, 'markAsRead'])->name('messages.markAsRead');
 		Route::get('/messages', [MessageController::class, 'index'])->name('messages.index');
+
 	});
 
 	//Admin Routes
@@ -66,13 +66,15 @@
 		Route::patch('freelancers/{id}/verify', [AdminController::class, 'verify'])->name('admin.verify');
 		Route::patch('freelancers/{id}/revoke', [AdminController::class, 'revoke'])->name('admin.revoke');
 		Route::patch('freelancers/{id}/suspend', [AdminController::class, 'suspend'])->name('admin.suspend');
-		Route::delete('/admin/users/{id}', [AdminController::class, 'deleteUser'])->name('admin.deleteUser');
+		Route::delete('/admin/delete-user/{id}', [AdminController::class, 'deleteUser'])->name('admin.deleteUser');
 		Route::post('/admin/notify', [AdminController::class, 'createService'])->name('admin.create');
 		Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');
 		Route::delete('admin/category/delete/{category}', [CategoryController::class, 'destroy'])->name('categories.delete');
 		Route::patch('categories/{category}', [CategoryController::class, 'update'])->name('categories.update');
-		Route::patch('/admin/services/{id}/feature', [ServiceController::class, 'feature'])->name('admin.feature');
-		Route::patch('/admin/services/{id}/removeFeature', [ServiceController::class, 'removeFeature'])->name('admin.removeFeature');
+		Route::patch('/admin/services/{id}/feature', [AdminController::class, 'feature'])->name('admin.feature');
+		Route::patch('/admin/services/{id}/removeFeature', [AdminController::class, 'removeFeature'])->name('admin.removeFeature');
+		Route::post('/admin/username', [AdminController::class, 'username'])->name('admin.username');
+
 
 	});
 

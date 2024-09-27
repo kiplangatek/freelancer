@@ -41,16 +41,11 @@
 
 				$request->session()->regenerate();
 
-				$redirectTo = match ($user->usertype) {
-					'client', 'freelancer' => '/my',
-					'admin' => '/admin',
-				};
-
-				return redirect()->intended($redirectTo);
+				return redirect()->intended('/my');
 			}
 
 			return back()->withErrors([
-				'email' => 'The provided credentials do not match our records.',
+				'email' => 'Wrong email or password.',
 			]);
 		}
 

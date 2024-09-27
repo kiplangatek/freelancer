@@ -12,13 +12,13 @@
 </head>
 <body class="bg-gray-100 min-h-screen text-gray-900 font-inter">
 <div class="mx-auto w-full h-screen bg-white ">
-	<div class="bg-gray-200 flex items-center h-fit py-5 px-5 sticky t-0 l-0 w-full">
-		<a href="{{ route('services.my') }}" class="inline-flex items-center text-blue-500 hover:text-blue-700 py-3 ">
+	<div class="bg-gray-200 flex items-center h-fit py-4 px-5 sticky t-0 l-0 w-full">
+		<a href="{{ route('services.my') }}" class="inline-flex items-center text-blue-500 hover:text-blue-700 py-2 ">
 			<ion-icon name="chevron-back-outline" class="mr-1 text-lg" size="large"></ion-icon>
 			Back
 		</a>
 
-		<h1 class="text-3xl font-black text-black text-center ml-4 py-3 ">Edit Profile</h1>
+		<h1 class="text-3xl font-black text-black text-center ml-4 py-2 ">Edit Profile</h1>
 	</div>
 
 	@if (session('success'))
@@ -37,15 +37,20 @@
 					class="w-28 h-28 rounded-full object-cover border-2 border-blue-500">
 			@endif
 		</div>
-
-		<div class="space-y-4">
+		<div class="space-y-3">
 			<div>
 				<label for="name" class="block text-sm font-medium text-gray-700">Name</label>
 				<input type="text" name="name" id="name" value="{{ old('name', $user->name) }}"
 					  class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 sm:text-sm">
 				<x-form-error name="name" />
 			</div>
-
+			<div>
+				<label for="username" class="block text-sm font-medium text-gray-700">Username</label>
+				<input type="text" name="username" id="username" value="{{ old('username', $user->username) }}"
+					  pattern="[a-zA-Z0-9]+" title="Username can only contain letters and numbers"
+					  class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 sm:text-sm">
+				<x-form-error name="username" />
+			</div>
 			<div>
 				<label for="photo" class="block text-sm font-medium text-gray-700">Profile Image</label>
 				<div class="flex flex-col items-center justify-center p-4 border-2 border-dashed border-gray-300 rounded-lg bg-gray-50"
@@ -59,7 +64,8 @@
 								   stroke-miterlimit="10" stroke-width="32" />
 							<path
 								d="M304 335.79l-90.66-90.49a32 32 0 00-43.87-1.3L48 352M224 432l123.34-123.34a32 32 0 0143.11-2L464 368"
-								fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+								fill="none" stroke="currentColor" stroke-linecap="round"
+								stroke-linejoin="round"
 								stroke-width="32" />
 						</svg>
 					</div>

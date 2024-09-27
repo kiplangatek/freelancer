@@ -61,7 +61,6 @@
 				@endif
 
 			</div>
-
 			<!-- Status Messages -->
 			@if (session('status'))
 				<div class="mt-6 rounded bg-green-100 p-4 text-green-800">

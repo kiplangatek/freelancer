@@ -3,16 +3,18 @@
 	namespace App\Http\Controllers;
 
 	use App\Mail\AccountSuspended;
-use App\Mail\CreateService;
-use App\Mail\Verification;
-use App\Models\Category;
-use App\Models\Rating;
-use App\Models\Service;
-use App\Models\User;
-use Carbon\Carbon;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
+	use App\Mail\CreateService;
+	use App\Mail\Username;
+	use App\Mail\Verification;
+	use App\Models\Category;
+	use App\Models\Message;
+	use App\Models\Rating;
+	use App\Models\Service;
+	use App\Models\User;
+	use Carbon\Carbon;
+	use Illuminate\Http\RedirectResponse;
+	use Illuminate\Http\Request;
+	use Illuminate\Support\Facades\Mail;
 
 	class AdminController extends Controller
 	{
@@ -27,7 +29,9 @@ use Illuminate\Support\Facades\Mail;
 				$query->where('usertype', $usertype);
 			}
 
-			$users = $query->where('usertype', '!=', 'admin')->get();
+			$users = $query
+				->where('usertype', '!=', 'admin')
+				->where('usertype', '!=', 'system')->get();
 
 			// Fetch all
 			$ratings = Rating::all();
@@ -45,7 +49,7 @@ use Illuminate\Support\Facades\Mail;
 
 		public function deleteUser($id): RedirectResponse
 		{
-			$user = User::findOrFail($id);
+			$user = (new User)->findOrFail($id);
 			$user->delete();
 
 			return redirect()->route('admin.index')->with('success', 'User deleted successfully.');
@@ -57,6 +61,12 @@ use Illuminate\Support\Facades\Mail;
 			if ($user) {
 				$user->verified = true;
 				$user->save();
+				Message::create([
+					'sender_id' => auth()->id(),
+					'receiver_id' => $user->id,
+					'message' => 'Your account has been verified.',
+					'status' => 'unread'
+				]);
 
 				// Send verification email
 				Mail::to($user->email)->send(new Verification($user));
@@ -70,11 +80,57 @@ use Illuminate\Support\Facades\Mail;
 		public function revoke($id): RedirectResponse
 		{
 			$user = User::find($id);
+
+			// Ensure the user exists
+			if (!$user) {
+				return redirect()->route('admin.index')->with('error', 'User not found.');
+			}
+
 			$user->verified = false;
 			$user->save();
 
+			Message::create([
+				'sender_id' => auth()->id(),
+				'receiver_id' => $user->id,
+				'message' => 'Your account verification has been revoked.',
+				'status' => 'unread'
+			]);
+
 			return redirect()->route('admin.index')->with('success', 'Freelancer verification revoked.');
 		}
+
+		public function feature($id)
+		{
+			$service = Service::find($id);
+			if ($service) {
+				$service->featured = true;
+				$service->save();
+				Message::create([
+					'sender_id' => 2,
+					'receiver_id' => $service->freelancer_id,
+					'message' => "Your service $service->title  has been featured.",
+					'status' => 'unread'
+				]);
+			}
+			return redirect()->route('admin.index', ['activeTab' => 'services']);
+		}
+
+		public function removeFeature($id)
+		{
+			$service = Service::find($id);
+			if ($service) {
+				$service->featured = false;
+				$service->save();
+				Message::create([
+					'sender_id' => 2,
+					'receiver_id' => $service->freelancer_id,
+					'message' => "Your service $service->title is no longer featured.",
+					'status' => 'unread'
+				]);
+			}
+			return redirect()->route('admin.index', ['activeTab' => 'services']);
+		}
+
 
 		public function suspend($id): RedirectResponse
 		{
@@ -96,7 +152,21 @@ use Illuminate\Support\Facades\Mail;
 				? 'User account has been suspended and notification sent.'
 				: 'User account has been unsuspended and notification sent.';
 
-			return back()->with('message', $message);
+			return back()->with('success', $message);
+		}
+
+		public function username()
+		{
+			// Fetch users without a username
+			$usersWithoutUsername = User::whereNull('username')->get();
+
+			// Send email to each user without a username
+			foreach ($usersWithoutUsername as $user) {
+				Mail::to($user->email)->send(new Username());
+			}
+
+			// Redirect back with success message
+			return redirect()->back()->with('success', 'Emails sent to users without a username.');
 		}
 
 		public function createService()

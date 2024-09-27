@@ -7,6 +7,7 @@
 	use App\Models\Rating;
 	use App\Models\Service;
 	use App\Models\User;
+	use App\Models\Message;
 	use Illuminate\Http\Request;
 	use Illuminate\Support\Facades\Auth;
 	use Illuminate\Support\Facades\Log;
@@ -45,8 +46,11 @@
 			// Fetch services associated with this freelancer, paginated
 			$services = $freelancer->services()->latest()->paginate(3);
 
-			// Pass the freelancer, services, and average rating to the view
-			return view('freelancer.services', compact('freelancer', 'services', 'averageRating'));
+			// Count all ratings for the freelancer
+			$allRatings = $freelancer->ratings()->count();
+
+			// Pass the freelancer, services, average rating, and all ratings to the view
+			return view('freelancer.services', compact('freelancer', 'services', 'averageRating', 'allRatings'));
 		}
 
 		public function show(Service $service)
@@ -76,8 +80,34 @@
 				->orderBy('status', 'asc') // false (0) at the top, true (1) at the bottom
 				->get();
 
+			$messages = Message::where('sender_id', $userId)
+				->orWhere('receiver_id', $userId)
+				->with(['sender', 'receiver'])
+				->get();
 
-			return view('profile.my', compact('services', 'activeApplications', 'categories', 'averageRating', 'applications'));
+			// Group messages by the other user's ID
+			$chats = $messages->groupBy(function ($message) use ($userId) {
+				return $message->sender_id === $userId ? $message->receiver_id : $message->sender_id;
+			});
+
+			// Initialize the unread count
+			$unreadCount = 0;
+
+			// Iterate through each chat group
+			foreach ($chats as $messages) {
+				// Check if there are messages in the group
+				if ($messages->isNotEmpty()) {
+					// Get the last message of the group
+					$lastMessage = $messages->last();
+
+					// Increment the count if the last message is unread
+					if ($lastMessage->status === 'unread' && $lastMessage->sender_id !== Auth::user()->id) {
+						$unreadCount++;
+					}
+				}
+			}
+
+			return view('profile.my', compact('services', 'activeApplications', 'categories', 'averageRating', 'applications', 'unreadCount'));
 		}
 
 		public function store(Request $request)
@@ -117,25 +147,6 @@
 			return view('services.edit', ['service' => $service]);
 		}
 
-		public function feature($id)
-		{
-			$service = Service::find($id);
-			if ($service) {
-				$service->featured = true;
-				$service->save();
-			}
-			return redirect()->route('admin.index', ['activeTab' => 'services']);
-		}
-
-		public function removeFeature($id)
-		{
-			$service = Service::find($id);
-			if ($service) {
-				$service->featured = false;
-				$service->save();
-			}
-			return redirect()->route('admin.index', ['activeTab' => 'services']);
-		}
 
 		public function update(Service $service, Request $request)
 		{
@@ -214,7 +225,7 @@
 					->orWhere('details', 'like', "%$search%");
 			})->orWhereHas('freelancer', function ($query) use ($search) {
 				$query->where('name', 'like', "%$search%");
-			})->paginate(6); // Add pagination here with a limit, e.g., 10 per page
+			})->paginate(6); // Paginate to show a limited number per page rather than a single page
 
 			$categories = Category::all();
 			$totalCount = $services->total();

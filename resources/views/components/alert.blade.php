@@ -16,7 +16,7 @@
     ];
 @endphp
 
-<div x-data="{ show: true }" x-show="show" class="{{ $alertClasses[$type] }} mb-1 flex items-center rounded-lg p-4">
+<div x-data="{ show: true }" x-show="show" class="{{ $alertClasses[$type] }} flex items-center rounded-lg p-4">
 	<ion-icon name="{{ $iconNames[$type] }}" class="mr-2 text-lg"></ion-icon>
 	<span class="flex-1">{{ $message }}</span>
 	<button @click="show = false" class="ml-4 text-current">
