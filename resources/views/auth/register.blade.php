@@ -13,25 +13,42 @@
 	<title>Register</title>
 	@vite(['resources/css/app.css'])
 	<script src="https://cdn.tailwindcss.com"></script>
+	<script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+	<script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
 </head>
 
 <body class="h-full font-inter">
 <div class="flex h-full items-center justify-center bg-gray-200 px-3 py-6 sm:py-6 lg:px-4 lg:py-4">
-	<div class="mt-4 w-[95%] mx-auto md:w-3/5 lg:w-1/2 p-4 shadow-md  bg-white rounded-lg">
+	<div class="mt-4 w-[95%] mx-auto md:w-3/5 lg:w-1/3 p-4 shadow-md  bg-white rounded-lg">
 		<h2 class="text-center text-xl md:text-2xl font-bold leading-tight text-black">
 			Sign up for an Account
 		</h2>
 		<form class="my-3" method="POST" action="/register" enctype="multipart/form-data">
 			@csrf
 			<div class="space-y-2 md:space-y-3">
-				<div>
-					<x-input type="text" name="name" placeholder="Your Full Name" />
-					<x-form-error name="name" />
+				<div class="grid sm:gap-2 grid-cols-1 md:grid-cols-2">
+					<!-- Full Name Field with Icon -->
+					<div class="relative">
+						<ion-icon name="person-outline" class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"></ion-icon>
+						<x-input type="text" name="name" placeholder="Your Full Name" class="pl-10" />
+						<x-form-error name="name" />
+					</div>
+				
+					<!-- Username Field with Icon -->
+					<div class="relative">
+						<ion-icon name="at-outline" class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"></ion-icon>
+						<x-input type="text" name="username" placeholder="Username" class="pl-10" />
+						<x-form-error name="username" />
+					</div>
 				</div>
-				<div>
-					<x-input type="email" name="email" placeholder="Email Address" />
+				
+				<!-- Email Field with Icon -->
+				<div class="relative">
+					<ion-icon name="mail-outline" class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"></ion-icon>
+					<x-input type="email" name="email" placeholder="Email Address" class="pl-10" />
 					<x-form-error name="email" />
 				</div>
+				
 				<div>
 					<x-label class="italic">Registering as?</x-label>
 					<select name="usertype" id="usertype"
@@ -43,14 +60,25 @@
 					</select>
 					<x-form-error name="usertype" />
 				</div>
-				<div>
-					<x-input type="password" name="password" placeholder="Password" />
-					<x-form-error name="password" />
+				<div class="grid sm:gap-2 grid-cols-1 md:grid-cols-2 gap-y-2">
+					<!-- Password Field with Eye Icon -->
+					<div class="relative">
+						<x-input type="password" id="password" name="password" placeholder="Password" class="pr-10" />
+						<ion-icon id="togglePassword" name="eye-outline"
+							class="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer text-gray-500"></ion-icon>
+						<x-form-error name="password" />
+					</div>
+				
+					<!-- Confirm Password Field with Eye Icon -->
+					<div class="relative">
+						<x-input type="password" id="password_confirmation" name="password_confirmation" placeholder="Confirm Password"
+							class="pr-10" />
+						<ion-icon id="togglePasswordConfirmation" name="eye-outline"
+							class="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer text-gray-500"></ion-icon>
+						<x-form-error name="password_confirmation" />
+					</div>
 				</div>
-				<div>
-					<x-input type="password" name="password_confirmation" placeholder="Confirm Password" />
-					<x-form-error name="password_confirmation" />
-				</div>
+				
 				<div>
 					<div class="flex flex-col items-center justify-center p-2 border-2 border-dashed border-gray-300 rounded-lg bg-gray-50"
 						id="drop-area">
@@ -77,12 +105,12 @@
 					</div>
 					<x-form-error name="photo" />
 				</div>
-				<div class="mt-2 w-full">
+				<div class="mt-2">
 					<x-form-button>
 						Register
 					</x-form-button>
 				</div>
-				<p class="mt-1 text-center text-xs md:text-sm text-gray-600">
+				<p class="mt-1 text-center text-sm md:text-sm text-gray-600">
 					Have an account? <a href="/login" class="text-blue-500 underline">Login here</a>
 				</p>
 			</div>
@@ -128,6 +156,23 @@
 			fileNameDisplay.textContent = ''
 		}
 	}
+
+	// Toggle Password Visibility
+document.getElementById('togglePassword').addEventListener('click', function () {
+    const passwordField = document.getElementById('password');
+    const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
+    passwordField.setAttribute('type', type);
+    this.setAttribute('name', type === 'password' ? 'eye-outline' : 'eye-off-outline');
+});
+
+// Toggle Confirm Password Visibility
+document.getElementById('togglePasswordConfirmation').addEventListener('click', function () {
+    const passwordConfirmField = document.getElementById('password_confirmation');
+    const type = passwordConfirmField.getAttribute('type') === 'password' ? 'text' : 'password';
+    passwordConfirmField.setAttribute('type', type);
+    this.setAttribute('name', type === 'password' ? 'eye-outline' : 'eye-off-outline');
+});
+
 </script>
 </body>
 </html>
