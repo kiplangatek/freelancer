@@ -5,7 +5,7 @@
 	use App\Models\Message;
 	use App\Models\User;
 	use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+	use Illuminate\Support\Facades\Auth;
 
 	class MessageController extends Controller
 	{
@@ -65,7 +65,7 @@ use Illuminate\Support\Facades\Auth;
 			$request->validate([
 				'receiver_id' => 'required|exists:users,id',
 				'message' => 'nullable|string|max:100000',
-				'file' => 'nullable|mimes:jpeg,png,jpg,gif,pdf,doc,docx,rar|max:5120',
+				'file' => 'nullable|mimes:jpeg,png,jpg,gif,pdf,doc,docx,rar,m4a|max:5120',
 			]);
 
 			// Create a new message instance
@@ -76,12 +76,13 @@ use Illuminate\Support\Facades\Auth;
 			// Handle the uploaded file, if present
 			if ($request->hasFile('file')) {
 				$file = $request->file('file');
+				$extension = $file->getClientOriginalExtension();
 
 				// Determine file name based on file type
-				if (in_array($file->getClientOriginalExtension(), ['jpeg', 'png', 'jpg', 'gif'])) {
+				if (in_array($extension, ['jpeg', 'png', 'jpg', 'gif'])) {
 					// For image files, use the timestamp as the filename
 					$timestamp = now()->format('YmdHis');
-					$filename = "{$timestamp}.{$file->getClientOriginalExtension()}";
+					$filename = "{$timestamp}.{$extension}";
 				} else {
 					// For other file types, use the original name
 					$filename = $file->getClientOriginalName();
@@ -93,13 +94,14 @@ use Illuminate\Support\Facades\Auth;
 			}
 
 			// Save the message text if available
-			if ($request->message) {
+			if ($request->filled('message')) {
 				$message->message = $request->message;
 			}
 
 			// Ensure at least a message or a file is provided before saving
 			if ($message->message || $message->file) {
 				$message->save(); // Save the message
+				return redirect()->back()->with('success', 'Message sent successfully!');
 			} else {
 				return redirect()->back()->withErrors(['message' => 'Please provide either a message or a file.']);
 			}

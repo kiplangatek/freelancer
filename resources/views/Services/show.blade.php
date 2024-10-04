@@ -133,6 +133,11 @@
 			</div>
 		</div>
 	</div>
+	<p class="text-base md:text-lg font-semibold mb-3 flex items-center p-1 rounded-xl bg-blue-200 w-fit">
+		<ion-icon name="star"
+				class="text-yellow-600 text-lg mr-1"></ion-icon>{{ number_format($averageRating, 1) }}
+		({{$allRatings}})
+	</p>
 	<div class="mb-6 space-y-1  px-3 md:px-14 py-4 border-t-2 border:bg-gray-400 ">
 		<h2 class="mt-1 text-xl font-semibold underline">DESCRIPTION</h2>
 		<div class="mb-5 space-y-1 px-3 pb-2.5 text-sm md:text-xl list-decimal-bold list-decimal">

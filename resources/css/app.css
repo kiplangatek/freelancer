@@ -30,3 +30,8 @@
 .hide-scrollbar::-webkit-scrollbar {
 	display: none; /* Chrome, Safari */
 }
+
+
+::-webkit-scrollbar {
+	display: none;
+}

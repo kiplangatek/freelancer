@@ -106,7 +106,7 @@
 		@endif
 	</div>
 
-	<div class="mx-auto grid grid-cols-1 gap-0.5 md:grid-cols-2 md:gap-1 lg:grid-cols-3">
+	<div class="mx-auto grid grid-cols-1 gap-0.5 md:grid-cols-2 md:gap-1 lg:grid-cols-3 xl:grid-cols-4">
 		@if ($services->isEmpty())
 			<div class="col-span-full text-center text-gray-600">
 				<div class="flex flex-col items-center justify-center space-y-4">

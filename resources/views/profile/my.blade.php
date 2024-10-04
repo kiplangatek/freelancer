@@ -39,6 +39,12 @@
 			border-radius: 24px;
 		}
 
+		#freelancerAnalysisChart {
+			max-width: 600px;
+			margin: 0 auto;
+		}
+
+
 		.hide-scrollbar {
 			overflow-x: auto; /* Enable horizontal scrolling */
 			-ms-overflow-style: none; /* IE and Edge */
@@ -76,7 +82,8 @@
 		<div class=" px-4 md:px-12 bg-gray-300 py-4">
 			<div class="flex justify-between">
 				<div class="h-24 w-24 overflow-hidden rounded-full bg-gray-300">
-					<img class="h-full w-full" src="{{ asset('storage/avatars/' . Auth::user()->photo) }}" alt="">
+					<img class="h-full w-full object-cover"
+						src="{{ asset('storage/avatars/' . Auth::user()->photo) }}" alt="">
 				</div>
 				<div class="relative">
 					<div class="relative">
@@ -122,6 +129,8 @@
 					</div>
 					<p class="text-sm text-gray-600 flex items-center">
 						<ion-icon name="at"></ion-icon>{{ Auth::user()->username }}</p>
+					<p class="text-sm text-gray-600 flex items-center italic">Joined
+						&nbsp;{{Auth::user()->created_at->format('M, Y')}}</p>
 				</div>
 				<a href="{{ route('profile') }}"
 				   class="mt-4 inline-block rounded-lg bg-blue-300 px-4 py-2 text-center text-white">
@@ -169,7 +178,6 @@
 			</div>
 			@endif
 		</div>
-
 		@if (session('success'))
 			<x-alert type="success" :message="session('success')" />
 		@endif
@@ -252,8 +260,8 @@
 								<!-- Overlay for Featured Status -->
 								@if ($service->featured)
 									<div class="absolute left-2 top-2">
-										<span
-											class="inline-block rounded-lg bg-blue-500 px-2 py-1 text-xs font-medium uppercase text-white">Featured</span>
+            							<span
+										class="inline-block rounded-lg bg-blue-500 px-2 py-1 text-xs font-medium uppercase text-white">Featured</span>
 									</div>
 								@endif
 
@@ -267,14 +275,18 @@
 								<div class="mb-2 flex items-center justify-between px-4 py-2">
 									<span
 										class="inline-block text-sm font-bold text-gray-800">{{ $service->title }}</span>
+									<a href="/services/{{ $service->id }}/edit"
+									   class="text-gray-500 hover:text-gray-700">
+										<ion-icon name="create" size="small" class="align-middle"></ion-icon>
+									</a>
 								</div>
 
 								<!-- Service Category and Delete Button -->
 								<div class="flex items-center justify-between px-2 pb-4">
-									<span
-										class="inline-block rounded-lg bg-blue-500 px-2 py-1 text-xs font-medium uppercase text-white">
-										  {{ $service->category->name }}
-									</span>
+								   <span
+									   class="inline-block rounded-lg bg-blue-500 px-2 py-1 text-xs font-medium uppercase text-white">
+									  {{ $service->category->name }}
+								   </span>
 									<button class="text-red-500 hover:text-red-600 focus:outline-none"
 										   onclick="toggleModal({{ $service->id }})">
 										<ion-icon name="trash"></ion-icon>
@@ -360,7 +372,6 @@
 
 				</div>
 			@endif
-
 			<div id="applications-content"
 				:class="activeTab === 'applications' ? 'tab-content active' : 'tab-content'" class="mt-4">
 				<h1 class="mb-4 text-3xl font-bold">My Applications</h1>
@@ -370,12 +381,33 @@
 					@foreach ($applications as $application)
 						@php
 							$service = $application->service;
-							$freelancer = $service->freelancer;
 						@endphp
 
 							<!-- Application Card -->
-						<div class="block w-full max-w-md overflow-hidden rounded-lg border border-gray-300 bg-white shadow-lg">
+						<div class="relative block w-full mx-auto overflow-hidden rounded-lg border border-gray-300 bg-white shadow-lg">
 							<div class="">
+								<!-- Status Badge (Top Right Corner) -->
+								@php
+									$statusClass = '';
+									$statusText = '';
+
+									if ($application->status && $application->client_status) {
+										$statusText = 'Completed';
+										$statusClass = 'text-gray-600 bg-green-200'; // Both true
+									} elseif ($application->status || $application->client_status) {
+										$statusText = 'In Progress'; // Change to whatever fits your logic
+										$statusClass = 'text-gray-600 bg-gradient-to-r from-yellow-200 to-green-200'; // One true
+									} else {
+										$statusText = 'Pending';
+										$statusClass = 'text-gray-600 bg-amber-100'; // None true
+									}
+								@endphp
+
+								<span
+									class="absolute top-2 right-2 text-sm font-semibold px-2 py-1 rounded-md {{ $statusClass }}">
+									{{ $statusText }}
+								</span>
+
 								<!-- Display Service Image -->
 								@if($service->image)
 									<img src="{{ asset('storage/services/' . $service->image) }}"
@@ -387,27 +419,18 @@
 									</div>
 								@endif
 
-								<!-- Service Title and Status -->
-								<div class=" flex items-center justify-between px-2 py-1">
+								<!-- Service Title and Price Info -->
+								<div class="px-2 py-2">
 									<span
 										class="text-lg font-semibold text-gray-800">{{ $service->title }}</span>
-									<span
-										class="text-sm font-semibold px-2 py-1 rounded-md  {{ $application->status ? 'text-ray-600 bg-green-200' : 'text-gray-600 bg-amber-100' }}">
-									{{ $application->status ? 'Completed' : 'Pending' }}
-								</span>
-								</div>
-
-								<!-- Freelancer and Price Info -->
-								<div class="mb-1 text-sm text-gray-500 px-2 py-1">
-								<span
-									class="block font-bold text-gray-700">{{ $freelancer->name ?? 'No Freelancer' }}</span>
-									<span>Price: Ksh. {{ number_format($service->price) }}</span>
+									<div class="mb-1 text-sm text-gray-500">
+										<span>Price: Ksh. {{ number_format($service->price) }}</span>
+									</div>
 								</div>
 
 								<!-- View Details Button -->
-
 								<a href="{{ route('applications.view', $application->id) }}"
-								   class="block mt-2 w-[95%] mb-2 mx-auto text-center bg-blue-600 text-white py-2 rounded-2xl font-medium hover:bg-blue-700 transition-colors">
+								   class="block mt-2 w-[95%] mb-2 mx-auto text-center bg-blue-600 text-white py-2 rounded-3xl font-medium hover:bg-blue-700 transition-colors">
 									View Details
 								</a>
 							</div>
@@ -417,63 +440,359 @@
 			</div>
 
 
+
 			<div id="dashboard-content" :class="activeTab === 'dashboard' ? 'tab-content active' : 'tab-content'"
 				class="mt-4">
 				<h1 class="mb-4 text-2xl font-bold">Analysis</h1>
 				<!-- Analysis content here -->
+				<div class=" mx-auto ">
+
+					@if(Auth::user()->usertype ==='client')
+						<div class="grid grid-cols-1 gap-6">
+							<div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+								<div class="bg-white shadow-lg rounded-lg p-2  w-full h-auto text-center">
+									<div class="flex flex-col items-center">
+										<ion-icon name="document-text-outline"
+												class="text-blue-600 text-2xl mb-2"></ion-icon>
+										<h3 class="text-sm font-bold text-gray-700">My Requests</h3>
+										<p id="requests" class="text-2xl font-bold text-blue-600">18</p>
+									</div>
+								</div>
+								<!-- My Spend Card -->
+								<div class="bg-white shadow-lg rounded-lg p-2  w-full h-auto text-center">
+									<div class="flex flex-col items-center">
+										<ion-icon name="cash-outline"
+												class="text-purple-600 text-2xl mb-2"></ion-icon>
+										<h3 class="text-sm font-bold text-gray-700">My Spend</h3>
+										<p id="spending" class="text-2xl font-bold text-purple-600">Ksh
+											45,000</p>
+									</div>
+								</div>
+								<!-- Average Monthly Spend Card -->
+								<div class="bg-white shadow-lg rounded-lg p-2  w-full h-auto  text-center">
+									<div class="flex flex-col items-center">
+										<ion-icon name="analytics-outline"
+												class="text-green-600 text-2xl mb-2"></ion-icon>
+										<h3 class="text-sm font-bold text-gray-700">Avg. Monthly Spend</h3>
+										<p id="averageSpend" class="text-2xl font-bold text-green-600">
+											Ksh
+											15,000</p>
+									</div>
+								</div>
+								<div class="bg-white shadow-lg rounded-lg p-2  w-full  text-center">
+									<div class="flex flex-col items-center">
+										<ion-icon name="checkmark-done-circle-outline"
+												class="text-green-600 text-2xl mb-2"></ion-icon>
+										<h3 class="text-sm font-bold text-gray-700">Completed</h3>
+										<p id="completed" class="text-2xl font-bold text-green-600">
+											19</p>
+									</div>
+								</div>
+							</div>
+						</div>
+					@endif
+					@if (Auth::user()->usertype === 'freelancer')
+
+						<div class="grid grid-cols-1 gap-6">
+							<div class="grid grid-cols-2 md:grid-cols-3 gap-2">
+								<!-- Total Requests Card -->
+								<div id="client-analysis"
+									class="bg-blue-50 shadow-lg rounded-lg p-4 w-full text-center">
+									<div class="flex flex-col items-center">
+										<ion-icon name="git-compare-outline"
+												class="text-purple-600 text-2xl mb-2"></ion-icon>
+										<h3 class="text-sm font-bold text-gray-700">Client Requests</h3>
+										<p id="requestCount" class="text-3xl font-bold text-purple-600">2</p>
+										<!-- Client label with bg-blue-300 -->
+									</div>
+								</div>
+								<!-- Completed Requests Card -->
+								<div id="client-analysis"
+									class="bg-blue-50 shadow-lg rounded-lg p-4  w-full text-center">
+									<div class="flex flex-col items-center">
+										<ion-icon name="checkmark-circle-outline"
+												class="text-green-600 text-2xl mb-2"></ion-icon>
+										<h3 class="text-sm font-bold text-gray-700">Client Completed</h3>
+										<p id="completedRequests" class="text-3xl font-bold text-green-600">
+											4</p>
+									</div>
+								</div>
+
+								<div class="bg-white shadow-lg rounded-lg p-2  w-full h-auto text-center">
+									<div class="flex flex-col items-center">
+										<ion-icon name="document-text-outline"
+												class="text-blue-600 text-2xl mb-2"></ion-icon>
+										<h3 class="text-sm font-bold text-gray-700">My Requests</h3>
+										<p id="applications" class="text-3xl font-bold text-blue-600"></p>
+									</div>
+								</div>
+								<div class="bg-white shadow-lg rounded-lg p-2  w-full text-center">
+									<div class="flex flex-col items-center">
+										<ion-icon name="checkmark-done-circle-outline"
+												class="text-blue-600 text-2xl mb-2"></ion-icon>
+										<h3 class="text-sm font-bold text-gray-700">Completed</h3>
+										<p id="myCompletedRequests" class="text-3xl font-bold text-green-600">
+											4</p>
+									</div>
+								</div>
+								<!-- My Spend Card -->
+								<div class="bg-white shadow-lg rounded-lg p-2  w-full h-auto text-center">
+									<div class="flex flex-col items-center">
+										<ion-icon name="cash-outline"
+												class="text-purple-600 text-3xl mb-2"></ion-icon>
+										<h3 class="text-sm font-bold text-gray-700">My Spend</h3>
+										<p id="mySpend" class="text-xl font-bold text-purple-600">Ksh
+											45,000</p>
+									</div>
+								</div>
+								<!-- Average Monthly Spend Card -->
+								<div class="bg-white shadow-lg rounded-lg p-2  w-full h-auto text-center">
+									<div class="flex flex-col items-center">
+										<ion-icon name="analytics-outline"
+												class="text-green-600 text-3xl mb-2"></ion-icon>
+										<h3 class="text-sm font-bold text-gray-700">Avg. Monthly Spend</h3>
+										<p id="avgSpending" class="text-xl font-bold text-green-600">
+											Ksh
+											15,000</p>
+									</div>
+								</div>
+
+								<!-- Total Services Card -->
+								<div class="bg-white shadow-lg rounded-lg p-2  w-full h-auto text-center">
+									<div class="flex flex-col items-center">
+										<ion-icon name="briefcase-outline"
+												class="text-blue-600 text-3xl mb-2"></ion-icon>
+										<h3 class="text-base font-bold text-gray-700">My Services</h3>
+										<p id="serviceCount" class="text-2xl font-bold text-blue-600">5</p>
+									</div>
+								</div>
+								<!-- Current Month Earnings Card -->
+								<div
+									x-data="{ percentageChange: 0, currentMonthEarnings: 1000 }"
+									x-init="fetch('/my/analysis')
+								   .then(response => response.json())
+								   .then(data => {
+									  percentageChange = data.percentageChange;
+									  currentMonthEarnings = data.currentMonthEarnings;
+								   })"
+									class="bg-white shadow-lg rounded-lg p-4 w-full text-center relative">
+
+									<div class="flex flex-col items-center">
+										<!-- Calendar Icon -->
+										<ion-icon name="calendar-outline"
+												class="text-indigo-600 text-3xl mb-2"></ion-icon>
+
+										<!-- Month Label -->
+										<h3 class="text-base font-bold text-gray-700 mb-1">This Month</h3>
+
+										<!-- Earnings and Percentage Change -->
+										<div class="relative flex items-center justify-center">
+											<!-- Current Month Earnings -->
+											<span id="currentMonthEarnings"
+												 class="text-lg font-semibold text-indigo-600">
+												 Ksh. <span x-text="currentMonthEarnings"></span>
+											  </span>
+										</div>
+
+										<!-- Percentage Change (Absolute Position) -->
+										<span id="change"
+											 class="text-sm font-semibold px-2 py-1 rounded-lg absolute top-0 right-0 m-0.5"
+											 :class="{
+												 'bg-green-100 text-green-700': percentageChange > 0,
+												 'bg-red-100 text-red-700': percentageChange < 0,
+												 'bg-gray-100 text-gray-700': percentageChange == 0
+											  }">
+											  <span x-text="percentageChange + '%'"></span>
+										   </span>
+
+										<!-- Deduction Notice -->
+										<p class="text-xs text-gray-500 mt-2">*After 10% fee deduction</p>
+									</div>
+								</div>
+
+
+								<!-- Total Earnings Card -->
+								<div class="bg-white shadow-lg rounded-lg p-2 w-full text-center col-span-2 md:col-span-1">
+									<div class="flex flex-col items-center">
+										<ion-icon name="cash-outline"
+												class="text-red-600 text-3xl mb-2"></ion-icon>
+										<h3 class="text-sm font-bold text-gray-700">All-Time Earnings</h3>
+										<p id="totalEarnings" class="text-3xl font-bold text-red-600">Ksh
+											99,000.00</p>
+										<p class="text-xs text-gray-500">*After 10% fee deduction</p>
+										<!-- Deduction notice -->
+									</div>
+								</div>
+							</div>
+							<!-- Bar Chart for Earnings Per Month -->
+							<div class="bg-white shadow-lg rounded-lg p-4">
+								<h3 class="text-xl font-bold text-gray-700 text-center mb-4">Earnings Per
+									Month</h3>
+								<canvas id="earningsChart" width="350" height="200"></canvas>
+							</div>
+						</div>
+					@endif
+
+				</div>
+
+
 			</div>
 
 			<div id="active-content" :class="activeTab === 'active' ? 'tab-content active' : 'tab-content'"
 				class="mt-4">
 				<h1 class="mb-4 text-2xl font-bold">Active Applications</h1>
-				<div class="mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+				<div class="mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 					@foreach($activeApplications as $activeApplication)
-						<div class="rounded-md shadow-sm overflow-hidden bg-white mb-4">
-							<div class="h-36 w-full overflow-hidden">
+						<div class="rounded-lg shadow-md overflow-hidden bg-white mb-4 border border-gray-200 transition-shadow duration-300 hover:shadow-lg w-full mx-auto">
+							<div class="h-28 w-full overflow-hidden rounded-t-lg">
 								<img class="h-full w-full object-cover"
 									src="{{ asset('storage/services/'.$activeApplication->service->image) }}"
 									alt="Service Image">
 							</div>
 							<div class="px-3 py-2">
-								<div class="flex items-center mb-2">
-									<ion-icon name="person-circle-outline" class="text-2xl"></ion-icon>
-									<p class="flex items-center ml-2">{{ $activeApplication->applicant->name }}</p>
+								<div class="flex items-center mb-1">
+									<ion-icon name="person-circle-outline"
+											class="text-xl text-blue-600"></ion-icon>
+									<p class="flex items-center ml-2 font-semibold text-gray-800 text-sm">{{ $activeApplication->applicant->name }}</p>
 								</div>
-								<div class="flex items-center mb-2">
-									<ion-icon name="mail-outline" class="text-2xl"></ion-icon>
-									<p class="flex items-center ml-2">{{ $activeApplication->applicant->email }}</p>
+								<div class="flex items-center mb-1">
+									<ion-icon name="mail-outline" class="text-xl text-blue-600"></ion-icon>
+									<p class="flex items-center ml-2 text-gray-600 text-sm">{{ $activeApplication->applicant->email }}</p>
 								</div>
-
 								<div>
-									<form action="{{ route('applications.update', $activeApplication->id) }}"
-										 method="POST">
-										@csrf
-										@method('PATCH')
-
-										<x-form-button type="submit"
-													class="{{ $activeApplication->status ? 'bg-blue-500 hover:bg-blue-600' : 'bg-green-500 hover:bg-green-600' }} text-white px-4 py-2 rounded">
-											{{ $activeApplication->status ? 'Mark as Incomplete' : 'Mark as Completed' }}
-										</x-form-button>
-									</form>
+									@if(!$activeApplication->client_status)
+										<form
+											action="{{ route('applications.update', $activeApplication->id) }}"
+											method="POST">
+											@csrf
+											@method('PATCH')
+											<button type="submit"
+												   class="{{ $activeApplication->status ? 'bg-blue-600 hover:bg-blue-700' : 'bg-green-600 hover:bg-green-700' }} text-white px-4 py-2 rounded-full shadow-md w-full transition-colors duration-200">
+												{{ $activeApplication->status ? 'Mark as Incomplete' : 'Mark as Completed' }}
+											</button>
+										</form>
+									@endif
 								</div>
 							</div>
 						</div>
+
 					@endforeach
-
-
 				</div>
-				@endif
-				@if(Auth::user()->usertype==='admin')
-					<div>
-						<a href="/admin" class="p-2 py-3 rounded-md bg-blue-500 text-gray-100">Go to Dashboard</a>
-					</div>
-				@endif
 			</div>
+
+		@endif
+		@if(Auth::user()->usertype==='admin')
+			<div>
+				<a href="/admin" class="p-2 py-3 rounded-md bg-blue-500 text-gray-100">Go to Dashboard</a>
+			</div>
+		@endif
+
 	</div>
 </section>
 <x-footer></x-footer>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+
+	@if(Auth::user()->usertype =='freelancer')
+	fetch('/my/analysis')
+		.then(response => {
+			if (!response.ok) {
+				throw new Error('Network response was not ok ' + response.statusText)
+			}
+			return response.json()
+		})
+		.then(data => {
+			// Update Cards
+			document.getElementById('serviceCount').textContent = data.serviceCount
+			document.getElementById('requestCount').textContent = data.requestCount
+			document.getElementById('completedRequests').innerHTML = `${data.completedRequests} <span class="text-sm">of</span> ${data.requestCount}`
+			document.getElementById('myCompletedRequests').innerHTML = `${data.myCompletedRequests} <span class="text-sm">of</span> ${data.applications}`
+			document.getElementById('applications').textContent = data.applications
+			document.getElementById('change').textContent = `${data.percentageChange}%`
+			// Format the total earnings with a Ksh label and proper number format
+			const formattedEarnings = new Intl.NumberFormat('en-KE').format(data.totalEarnings)
+			const formattedSpend = new Intl.NumberFormat('en-Ke').format(data.mySpend)
+			document.getElementById('totalEarnings').textContent = `Ksh. ${formattedEarnings}`
+
+			document.getElementById('mySpend').textContent = `Ksh. ${formattedSpend}`
+			// Calculate current month's earnings
+			const currentMonth = new Date().getMonth() + 1 // JS months are zero-indexed
+			const currentMonthEarnings = data.monthlyEarnings[currentMonth] || 0
+			document.getElementById('currentMonthEarnings').textContent = `Ksh. ${new Intl.NumberFormat('en-KE').format(currentMonthEarnings)}`
+
+			const montlyFormatted = new Intl.NumberFormat('en-KE').format(data.averageSpending)
+
+			document.getElementById('avgSpending').textContent = `Ksh. ${montlyFormatted}`
+
+			// Bar Chart for earnings per month
+			const earningsCtx = document.getElementById('earningsChart').getContext('2d')
+			new Chart(earningsCtx, {
+				type: 'bar', // Base chart type
+				data: {
+					// labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'], // Month names
+					datasets: [
+						{
+							label: 'Earnings per Month (Bar)',
+							data: data.monthlyEarnings, // Assuming data.monthlyEarnings contains earnings for each month
+							backgroundColor: 'rgba(255, 99, 132, 0.2)',
+							borderColor: 'rgba(255, 99, 132, 1)',
+							borderWidth: 1,
+							type: 'bar', // Explicitly setting this dataset as a bar
+						},
+						{
+							label: 'Earnings per Month (Line)',
+							data: data.monthlyEarnings, //
+							borderColor: 'rgba(54, 162, 235, 1)',
+							backgroundColor: 'rgba(156,213,255,0.3)', // No background for line
+							fill: true, // Fill under the line
+							type: 'line', // Explicitly setting this dataset as a line
+							tension: 0.3, // Optional: Smoothness of the line
+						},
+					],
+				},
+				options: {
+					scales: {
+						y: {
+							beginAtZero: true,
+						},
+					},
+				},
+			})
+
+		})
+		.catch(error => console.error('Error fetching analysis:', error))
+	@endif
+
+
+	@if(Auth::user()->usertype=='client')
+	fetch('/analysis')
+		.then(response => {
+			if (!response.ok) {
+				throw new Error('Network Error' + response.statusText)
+			}
+			return response.json()
+		})
+		.then(data => {
+			document.getElementById('requests').textContent = data.applications
+			const formattedSpending = new Intl.NumberFormat('en-Ke').format(data.spending)
+			document.getElementById('spending').textContent = `Ksh. ${formattedSpending}`
+			formattedAvgSpending = new Intl.NumberFormat('en-Ke').format(data.averageSpend)
+			document.getElementById('averageSpend').textContent = `Ksh. ${formattedAvgSpending}`
+			document.getElementById('completed').innerHTML = `${data.completed} <span class="text-sm">of</span> ${data.applications}`
+		})
+	@endif
+
+</script>
 
 <script>
+
+	function toggleClient() {
+		const clientAnalysis = document.querySelectorAll('#client-analysis')
+
+		clientAnalysis.classList.add('hidden')
+	}
+
+
 	function toggleModal(serviceId) {
 		const bg = document.getElementById(`dialog-bg-${serviceId}`)
 		const dialog = document.getElementById(`dialog-${serviceId}`)
@@ -485,46 +804,51 @@
 	}
 </script>
 <x-scripts></x-scripts>
-<script>
-	const fileInput = document.getElementById('file-upload')
-	const dropArea = document.getElementById('drop-area')
-	const fileNameDisplay = document.getElementById('file-name')
-	const uploadTrigger = document.getElementById('upload-trigger')
 
-	uploadTrigger.addEventListener('click', () => {
-		fileInput.click()
-	})
+@if(Auth::user()->usertype =='freelancer')
+	<script>
+		const fileInput = document.getElementById('file-upload')
+		const dropArea = document.getElementById('drop-area')
+		const fileNameDisplay = document.getElementById('file-name')
+		const uploadTrigger = document.getElementById('upload-trigger')
 
-	fileInput.addEventListener('change', () => {
-		displayFileName(fileInput.files[0])
-	});
+		uploadTrigger.addEventListener('click', () => {
+			fileInput.click()
+		})
 
-	['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-		dropArea.addEventListener(eventName, preventDefaults, false)
-	})
+		fileInput.addEventListener('change', () => {
+			displayFileName(fileInput.files[0])
+		});
 
-	function preventDefaults(e) {
-		e.preventDefault()
-		e.stopPropagation()
-	}
+		['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+			dropArea.addEventListener(eventName, preventDefaults, false)
+		})
 
-	dropArea.addEventListener('drop', handleDrop, false)
-
-	function handleDrop(e) {
-		let dt = e.dataTransfer
-		let files = dt.files
-		fileInput.files = files
-		displayFileName(files[0])
-	}
-
-	function displayFileName(file) {
-		if (file) {
-			fileNameDisplay.textContent = `Selected file: ${file.name}`
-		} else {
-			fileNameDisplay.textContent = ''
+		function preventDefaults(e) {
+			e.preventDefault()
+			e.stopPropagation()
 		}
-	}
-</script>
+
+		dropArea.addEventListener('drop', handleDrop, false)
+
+		function handleDrop(e) {
+			let dt = e.dataTransfer
+			let files = dt.files
+			fileInput.files = files
+			displayFileName(files[0])
+		}
+
+		function displayFileName(file) {
+			if (file) {
+				fileNameDisplay.textContent = `Selected file: ${file.name}`
+			} else {
+				fileNameDisplay.textContent = ''
+			}
+		}
+
+
+	</script>
+@endif
 </body>
 
 </html>

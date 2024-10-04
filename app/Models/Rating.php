@@ -11,7 +11,7 @@
 		use HasFactory;
 
 		protected $fillable = [
-			'user_id', 'freelancer_id', 'rating', 'service_id', 'comments'
+			'user_id', 'freelancer_id', 'rating', 'service_id', 'comments', 'application_id'
 		];
 
 		public function user(): BelongsTo
@@ -29,9 +29,9 @@
 			return $this->belongsTo(User::class);
 		}
 
-		public function applicant()
+		public function application()
 		{
-			return $this->belongsTo(related: User::class);
+			return $this->belongsTo(related: Application::class);
 		}
 
 

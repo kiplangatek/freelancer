@@ -1,10 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
 	<meta charset="UTF-8">
-	<meta name="viewport"
-		 content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+	<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
 	<meta http-equiv="X-UA-Compatible" content="ie=edge">
 	<link rel="apple-touch-icon" sizes="180x180" href="{{ asset('storage/ui/apple-touch-icon.png') }}">
 	<link rel="icon" type="image/png" sizes="32x32" href="{{ asset('storage/ui/favicon-32x32.png') }}">
@@ -26,39 +25,42 @@
 	</style>
 </head>
 
-<body class="flex h-screen items-center bg-gray-100 px-5">
-<div class="w-full max-w-md rounded-lg bg-white px-8 py-8 shadow-lg">
-	<h2 class="mb-6 text-2xl font-bold">Password Reset</h2>
+<body class="flex items-center justify-center min-h-screen bg-gray-100 px-5">
+	<div class="w-full max-w-md rounded-lg bg-white px-8 py-8 shadow-lg">
+		<h2 class="mb-6 text-2xl font-bold">Password Reset</h2>
 
-	@if ($errors->any())
-		<div class="mb-2 rounded bg-red-100 p-4 text-red-700">
-			<ul>
-				@foreach ($errors->all() as $error)
-					<li>{{ $error }}</li>
-				@endforeach
-			</ul>
-		</div>
-	@endif
-	@if (session('status'))
-		<x-alert type="success" :message="session('status')" />
-	@endif
-	<form method="POST" action="{{ route('password.email') }}" class="space-y-4">
-		@csrf
-		<div>
-			<label for="email" class="block text-sm font-medium text-gray-700">Email Address</label>
-			<input type="email" name="email" id="email" required
-				  class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm">
-		</div>
-		<x-form-button type="submit"
-			   class="flex w-full justify-center rounded-md border border-transparent px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
-			Send Password Reset Link
-		</x-form-button>
-		<a class="text-sm font-semibold text-blue-500 hover:underline block" href="/login">
-			< Go Back
-		</a>
-	</form>
-</div>
+		@if ($errors->any())
+			<div class="mb-2 rounded bg-red-100 p-4 text-red-700">
+				<ul>
+					@foreach ($errors->all() as $error)
+						<li>{{ $error }}</li>
+					@endforeach
+				</ul>
+			</div>
+		@endif
 
+		@if (session('status'))
+			<x-alert type="success" :message="session('status')" />
+		@endif
+
+		<form method="POST" action="{{ route('password.email') }}" class="space-y-4">
+			@csrf
+			<div>
+				<label for="email" class="block text-sm font-medium text-gray-700">Email Address</label>
+				<input type="email" name="email" id="email" required
+					class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm">
+			</div>
+
+			<x-form-button type="submit"
+				class="flex w-full justify-center rounded-md border border-transparent px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+				Send Password Reset Link
+			</x-form-button>
+
+			<a class="text-sm font-semibold text-blue-500 hover:underline block text-center" href="/login">
+				< Go Back
+			</a>
+		</form>
+	</div>
 </body>
 
 </html>

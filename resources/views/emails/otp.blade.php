@@ -11,21 +11,64 @@
 		body {
 			font-family: 'Inter', sans-serif;
 			background-color: #f4f4f4;
+			margin: 0;
+			padding: 0;
+		}
+
+		.container {
+			max-width: 350px;
+			margin: 40px auto;
+			background-color: #ffffff;
+			padding: 20px;
+			border-radius: 12px;
+			box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+		}
+
+		h1 {
+			color: #1a202c;
+			font-size: 22px;
+			font-weight: 700;
+			text-align: center;
+			margin-bottom: 20px;
+		}
+
+		p {
+			font-size: 15px;
+			color: #555555;
+			text-align: center;
+			line-height: 1.5;
+			margin: 10px 0;
+		}
+
+		.otp-code {
+			font-size: 36px;
+			color: #1a202c;
+			text-align: center;
+			font-weight: 800;
+			margin: 20px 0;
+			letter-spacing: 4px;
+		}
+
+		.footer {
+			font-size: 12px;
+			color: #777777;
+			text-align: center;
+			margin-top: 30px;
 		}
 	</style>
 </head>
 
 <body>
-<div
-	style="max-width: 600px; margin: 40px auto; background-color: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);">
-	<h1 style="color: #333333; font-size: 24px; text-align: center;">Your OTP Code</h1>
-	<p style="font-size: 16px; color: #555555; text-align: center;">Your OTP code is:</p>
-	<p style="font-size: 36px; color: #1a202c; text-align: center; font-weight: bold; margin: 20px 0;">
-		{{ $otp }}</p>
-	<p style="font-size: 14px; color: #777777; text-align: center;">This code will expire in 10 minutes.</p>
-	<p style="font-size: 14px; color: #777777; text-align: center; margin-top: 40px;">If you didn’t request this
-		code, please ignore this email or contact support.</p>
-</div>
+	<div class="container">
+		<h1>Your OTP Code</h1>
+		<p>Your OTP code is:</p>
+		<p class="otp-code">{{ $otp }}</p>
+		<p>This code will expire in 10 minutes.</p>
+		<p class="footer">
+			If you didn’t request this code, please ignore this email or contact support.
+		</p>
+	</div>
 </body>
 
 </html>
+

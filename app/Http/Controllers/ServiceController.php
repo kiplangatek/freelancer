@@ -8,6 +8,7 @@
 	use App\Models\Service;
 	use App\Models\User;
 	use App\Models\Message;
+	use Illuminate\Support\Facades\DB;
 	use Illuminate\Http\Request;
 	use Illuminate\Support\Facades\Auth;
 	use Illuminate\Support\Facades\Log;
@@ -25,7 +26,7 @@
 			}
 
 			// Use paginate() to get the total count
-			$services = $services->orderBy('created_at', 'asc')->paginate(3)->appends(['category' => $categoryId]);
+			$services = $services->orderBy('created_at', 'asc')->paginate(4)->appends(['category' => $categoryId]);
 
 			$categories = Category::all();
 
@@ -57,9 +58,13 @@
 		{
 			// Retrieve the freelancer ID from the service
 			$freelancerId = $service->freelancer_id;
+			$serviceRatings = Service::with('ratings')->findOrFail($service->id);
+
+			$allRatings = $serviceRatings->ratings()->count();
+			$averageRating = $serviceRatings->averageRating();
 
 			// Pass service and freelancerId to the view
-			return view('services.show', compact('service', 'freelancerId'));
+			return view('services.show', compact('service', 'freelancerId', 'averageRating', 'allRatings'));
 		}
 
 		public function my(Service $service, Application $application)
@@ -72,11 +77,13 @@
 			$averageRating = $ratings ? number_format($ratings, 1) : '0.0';
 			$applications = Application::where('applicant_id', $user->id)
 				->with('service')
+				->orderBy('client_status', 'asc')
 				->orderBy('status', 'asc')
 				->get();
 			$services = Service::where('freelancer_id', $userId)->latest('id')->get();
 			$activeApplications = Application::where('freelancer_id', Auth::id())
 				->with(['service', 'applicant'])
+				->orderBy('client_status', 'asc') // false (0) at the top, true (1) at the bottom
 				->orderBy('status', 'asc') // false (0) at the top, true (1) at the bottom
 				->get();
 
@@ -107,13 +114,14 @@
 				}
 			}
 
+
 			return view('profile.my', compact('services', 'activeApplications', 'categories', 'averageRating', 'applications', 'unreadCount'));
 		}
 
 		public function store(Request $request)
 		{
 			$request->validate([
-				'title' => ['required', 'min:3'],
+				'title' => ['required', 'min:10'],
 				'price' => ['required'],
 				'details' => ['required'],
 				'category_id' => ['required'],
@@ -125,9 +133,18 @@
 			// Handle the photo upload
 			if ($image = $request->file('image')) {
 				$destinationPath = 'storage/services/';
-				$profileImage = date('YmdHis') . "." . $image->getClientOriginalExtension();
-				$image->move($destinationPath, $profileImage);
-				$details['image'] = $profileImage;
+				// Get the service title and replace spaces with hyphens
+				$serviceTitle = str_replace(' ', '-', $details['title']);
+
+				// Create the image filename with the formatted title and the original file extension
+				$serviceImage = $serviceTitle . '.' . $image->getClientOriginalExtension();
+
+				// Move the image to the destination path
+				$image->move($destinationPath, $serviceImage);
+
+				// Store the image name in the $details array
+				$details['image'] = $serviceImage;
+
 			}
 
 			Service::create([
@@ -206,8 +223,12 @@
 				$activeApplicationsCount = $service->applications()->count();
 				$applicationText = $activeApplicationsCount === 1 ? 'application' : 'applications';
 
-				return redirect()->back()->with('error', "Cannot delete $service->title because of  $activeApplicationsCount active $applicationText.");
+				return redirect()->back()->with('error', "Cannot delete $service->title because of $activeApplicationsCount active $applicationText.");
+			}
 
+			// Unlink (delete) the service photo from storage if it exists
+			if ($service->image && \Storage::exists('services/' . $service->image)) {
+				\Storage::delete('services/' . $service->image);
 			}
 
 			// Delete the service if no related applications exist
@@ -216,6 +237,7 @@
 			// Redirect to the services list with a success message
 			return redirect()->back()->with('success', 'Service deleted successfully.');
 		}
+
 
 		public function search(Request $request)
 		{
@@ -231,5 +253,39 @@
 			$totalCount = $services->total();
 			return view('services.index', compact('search', 'categories', 'totalCount', 'services'));
 		}
+
+		public function analysis(Request $request)
+		{
+			$user = Auth::user()->id;
+
+			// Count of applications made by the user and the completed applications
+			$applications = Application::where('applicant_id', $user)->count();
+			$completed = Application::where('client_status', 1)->where('applicant_id', $user)->count();
+
+
+			// Calculate total spending from completed applications
+			$spending = DB::table('services')
+				->join('applications', 'services.id', '=', 'applications.service_id')
+				->where('applications.applicant_id', $user) // Only applications made by the authenticated user
+				->where('applications.status', 1) // Only completed applications
+				->where('applications.client_status', 1) // Only completed applications
+				->sum('services.price');
+
+			// Check How long a user has been registered to the nearest month
+			$registeredAt = Auth::user()->created_at;
+			$now = now();
+			$monthsSinceRegistration = round($registeredAt->diffInMonths($now));
+
+			// Calculate average spend
+			$averageSpend = $monthsSinceRegistration > 0 ? round($spending / $monthsSinceRegistration, 2) : 0;
+
+			return response()->json([
+				'completed' => $completed,
+				'applications' => $applications,
+				'averageSpend' => $averageSpend,
+				'spending' => $spending,
+			]);
+		}
+
 
 	}

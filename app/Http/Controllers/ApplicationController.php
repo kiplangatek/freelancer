@@ -6,6 +6,7 @@
 	use App\Models\Application;
 	use App\Models\Rating;
 	use App\Models\Service;
+	use App\Models\User;
 	use Illuminate\Http\Request;
 	use Illuminate\Support\Facades\Auth;
 	use Illuminate\Support\Facades\Mail;
@@ -32,14 +33,21 @@
 
 		public function show($id)
 		{
+			// Fetch the application with the associated service and freelancer
 			$application = Application::with(['service.freelancer'])->find($id);
 
 			if (!$application) {
 				abort(404); // or handle the case where the application is not found
 			}
 
-			return view('applications.show', compact('application'));
+			// Get the freelancer from the service associated with the application
+			$freelancer = $application->service->freelancer;
+
+
+			// Pass application, freelancer, average rating, and ratings count to the view
+			return view('applications.show', compact('application', 'freelancer'));
 		}
+
 
 		public function apply(Request $request)
 		{
@@ -85,5 +93,14 @@
 			return redirect()->back()->with('success', $message);
 		}
 
+
+		public function approveCompleted($id)
+		{
+			$application = Application::findOrFail($id);
+			$application->client_status = 1;
+			$application->save();
+
+			return redirect()->back()->with('success', 'Application approved successfully!,You can rate the delivery at the bottom');
+		}
 
 	}

@@ -30,6 +30,8 @@
 	Route::get('/services/{service}', [ServiceController::class, 'show'])->name('services.show');
 	Route::get('freelancer/{id}', [ServiceController::class, 'services'])->name('freelancer.services');
 	Route::get('/creators', [FreelancerDashboardController::class, 'creator'])->name('creators.index');
+	Route::get('/my/analysis', [FreelancerDashboardController::class, 'getAnalysis']);
+	Route::get('/analysis', [ServiceController::class, 'analysis']);
 
 	//Pasword Resets
 	Route::get('/forgot-password', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
@@ -47,7 +49,7 @@
 	//Authenticable Roots
 	Route::middleware(['auth'])->group(function () {
 		Route::get('/applications/{id}', [ApplicationController::class, 'show'])->name('applications.view');
-		Route::patch('/applications/{id}', [ApplicationController::class, 'complete'])->name('applications.update');
+		Route::patch('/application/{id}', [ApplicationController::class, 'complete'])->name('applications.update');
 		Route::post('/apply', [ApplicationController::class, 'apply'])->name('applications.apply');
 		Route::delete('/my/{application}', [ApplicationController::class, 'cancel'])->name('applications.cancel');
 		Route::post('/rate', [RatingController::class, 'store'])->name('ratings.store');
@@ -57,6 +59,7 @@
 		Route::get('/chat/{user}', [MessageController::class, 'show'])->name('chat.show');
 		Route::post('/messages', [MessageController::class, 'store'])->name('messages.store');
 		Route::get('/messages', [MessageController::class, 'index'])->name('messages.index');
+		Route::patch('/applications/{id}', [ApplicationController::class, 'approveCompleted'])->name('applications.approve');
 
 	});
 
@@ -85,5 +88,6 @@
 		Route::get('/services/{service}/edit', [ServiceController::class, 'edit'])->can('edit', 'service')->name('services.edit');
 		Route::patch('/services/{service}', [ServiceController::class, 'update'])->can('edit', 'service')->name('services.update');
 		Route::delete('/services/{service}', [ServiceController::class, 'destroy'])->name('services.destroy');
+
 
 	});

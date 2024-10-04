@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,30 +16,31 @@
 		}
 
 		.container {
-			max-width: 600px;
+			max-width: 400px;
 			margin: 40px auto;
 			padding: 20px;
 			background-color: #ffffff;
-			border-radius: 8px;
-			box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+			border-radius: 12px;
+			box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 		}
 
 		h1 {
-			font-size: 24px;
+			font-size: 26px;
 			color: #2d3748;
+			font-weight: 700;
 			margin-bottom: 20px;
 		}
 
 		p {
 			font-size: 16px;
 			color: #4a5568;
-			line-height: 1.5;
+			line-height: 1.6;
 			margin-bottom: 20px;
 		}
 
 		.text-sm {
 			font-size: 14px;
-			color: #4a5568;
+			color: #718096;
 		}
 
 		.font-bold {
@@ -65,19 +67,22 @@
 		}
 	</style>
 </head>
+
 <body>
-<div class="container">
-	<section>
-		<h1 class="font-bold">Hello {{ $user->name }},</h1>
-		<p>Thank you for registering on our platform. We are excited to have you on board!</p>
-		<p>You are registered as <strong>{{ $user->usertype }}</strong>.</p>
-		<p>Best regards,<br>The Team</p>
-	</section>
-	<div class="border-t text-center text-sm">
-		<p>If you have any questions, feel free to
-			<a href="mailto:edwin@tablink.co.ke" class="text-blue-600">Contact us</a>.
-		</p>
+	<div class="container">
+		<section>
+			<h1 class="font-bold">Hello {{ $user->name }},</h1>
+			<p>Thank you for registering on our platform. We are excited to have you on board!</p>
+			<p>You are registered as <strong>{{ ucfirst($user->usertype) }}</strong>.</p>
+			<p>Best regards,<br>The Team</p>
+		</section>
+
+		<div class="border-t text-center text-sm">
+			<p>If you have any questions, feel free to
+				<a href="mailto:edwin@tablink.co.ke" class="text-blue-600">contact us</a>.
+			</p>
+		</div>
 	</div>
-</div>
 </body>
+
 </html>

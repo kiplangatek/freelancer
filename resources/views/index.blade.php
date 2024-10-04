@@ -98,17 +98,7 @@
 					<div id="scrollContainer"
 						class="scrollbar-hidden flex space-x-2 overflow-x-auto scroll-smooth">
 						@foreach ($features as $feature)
-							{{-- <a href="{{ route('services.show', $feature->id) }}">
-								<div class=" w-[360px] flex-shrink-0 rounded-lg bg-white pb-4 shadow-md">
-									<img src="{{ asset('storage/services/' . $feature->image) }}"
-										alt="{{ $feature->title }}"
-										class="mb-4 h-32 w-full rounded-md rounded-b-none object-cover">
-									<h3 class="px-2 text-lg font-bold text-gray-800">{{ $feature->title }}</h3>
-									<p class="mb-1 px-2 text-sm text-gray-600">
-										Ksh. {{ number_format($feature->price) }}</p>
-									<h5 class="px-2 text-lg font-semibold text-gray-600">{{ $feature->freelancer->name }}</h5>
-								</div>
-							</a> --}}
+							
 							<a href="{{ route('services.show',$feature->id) }}">
 								<div class="h-auto w-[360px] flex-shrink-0 rounded-lg p-2 shadow-md mb-2 bg-gray-100/50">
 									<div class="flex w-full gap-x-1 h-24 mb-3">

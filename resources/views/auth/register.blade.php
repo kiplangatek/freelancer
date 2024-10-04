@@ -50,11 +50,9 @@
 				</div>
 				
 				<div>
-					<x-label class="italic">Registering as?</x-label>
 					<select name="usertype" id="usertype"
 						   class="w-full rounded-md bg-gray-300 px-3 py-2 text-sm font-medium ">
-						<option class="text-sm italic" value="" selected disabled>Select who you want to be
-						</option>
+						<option class="text-sm italic" value="" selected disabled>Select how you are registering</option>
 						<option class="text-sm italic" value="client">Client</option>
 						<option class="text-sm italic" value="freelancer">Freelancer</option>
 					</select>

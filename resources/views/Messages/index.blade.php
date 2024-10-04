@@ -113,7 +113,7 @@
 									class="text-gray-600 text-base flex-shrink-0"></ion-icon>
 						@endif
 						<!-- Display the last message text -->
-						<span class="truncate text-gray-800 font-normal">{{$lastMessage->file}} &nbsp; {!! nl2br($lastMessage->message) !!}
+						<span class="truncate text-gray-800 font-normal">{{$lastMessage->file}} &nbsp; {{$lastMessage->message}}
 					</span>
 					</p>
 				</div>

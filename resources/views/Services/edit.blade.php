@@ -25,7 +25,7 @@
 		<h2 class="text-center text-2xl font-semibold text-gray-800 mb-6">
 			Edit Service
 		</h2>
-		<form class="space-y-6" method="POST" action="/services/{{$service->id}}" enctype="multipart/form-data">
+		<form class="space-y-4" method="POST" action="/services/{{$service->id}}" enctype="multipart/form-data">
 			@csrf
 			@method('PATCH')
 			<div>
@@ -43,11 +43,13 @@
 				<x-form-error name="price" />
 			</div>
 			<div>
-				<x-label for="details" class="text-gray-700">Description</x-label>
-				<x-textarea id="details" name="details"
-						  class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-						  placeholder="Enter service description..." required>{{ $service->details }}</x-textarea>
-				<x-form-error name="details" />
+				<div>
+					<x-label for="details" class="text-gray-700">Description</x-label>
+					<x-textarea id="details" name="details"
+							  class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+							  placeholder="Enter service description..."></x-textarea>
+					<x-form-error name="details" />
+				</div>
 			</div>
 			<div class="flex flex-col items-center justify-center p-4 border-2 border-dashed border-gray-300 rounded-lg bg-gray-50"
 				id="drop-area">
@@ -82,6 +84,12 @@
 		</form>
 	</div>
 </section>
+
+<script>
+	document.getElementById('service-form').addEventListener('submit', function(e) {
+		document.getElementById('details').focus() // Force focus on the textarea
+	})
+</script>
 
 <script>
 	const fileInput = document.getElementById('file-upload')

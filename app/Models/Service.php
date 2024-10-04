@@ -34,5 +34,14 @@
 			return $this->belongsTo(Category::class, 'category_id');
 		}
 
+		public function ratings(): HasMany
+		{
+			return $this->hasMany(Rating::class, 'service_id');
+		}
+
+		public function averageRating()
+		{
+			return $this->ratings()->avg('rating');
+		}
 
 	}

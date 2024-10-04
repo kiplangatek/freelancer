@@ -69,20 +69,20 @@
 		</div>
 		<nav class="mt-5 md:mt-20">
 			<a @click.prevent="activeTab = 'users'; window.history.pushState({}, '', '?activeTab=users')"
-			   :class="{ 'bg-gray-500': activeTab === 'users' }"
-			   class="block rounded-lg px-4 py-2 text-sm font-medium">Users</a>
+			   :class="{ 'bg-blue-500': activeTab === 'users' }"
+			   class="block rounded-xl px-4 py-2 text-sm font-medium">Users</a>
 			<a @click.prevent="activeTab = 'ratings'; window.history.pushState({}, '', '?activeTab=ratings')"
-			   :class="{ 'bg-gray-500': activeTab === 'ratings' }"
-			   class="mt-4 block rounded-lg px-4 py-2 text-sm font-medium">Ratings</a>
+			   :class="{ 'bg-blue-500': activeTab === 'ratings' }"
+			   class="mt-4 block rounded-xl px-4 py-2 text-sm font-medium">Ratings</a>
 			<a @click.prevent="activeTab = 'services'; window.history.pushState({}, '', '?activeTab=services')"
-			   :class="{ 'bg-gray-500': activeTab === 'services' }"
-			   class="mt-4 block rounded-lg px-4 py-2 text-sm font-medium">Services</a>
+			   :class="{ 'bg-blue-500': activeTab === 'services' }"
+			   class="mt-4 block rounded-xl px-4 py-2 text-sm font-medium">Services</a>
 			<a @click.prevent="activeTab = 'inactive-freelancers'; window.history.pushState({}, '', '?activeTab=inactive-freelancers')"
-			   :class="{ 'bg-gray-500': activeTab === 'inactive-freelancers' }"
-			   class="mt-4 block rounded-lg px-4 py-2 text-sm font-medium">Inactive Freelancers</a>
+			   :class="{ 'bg-blue-500': activeTab === 'inactive-freelancers' }"
+			   class="mt-4 block rounded-xl px-4 py-2 text-sm font-medium">Inactive Freelancers</a>
 			<a @click.prevent="activeTab = 'categories'; window.history.pushState({}, '', '?activeTab=categories')"
-			   :class="{ 'bg-gray-500': activeTab === 'categories' }"
-			   class="mt-4 block rounded-lg px-4 py-2 text-sm font-medium">Categories</a>
+			   :class="{ 'bg-blue-500': activeTab === 'categories' }"
+			   class="mt-4 block rounded-xl px-4 py-2 text-sm font-medium">Categories</a>
 		</nav>
 
 	</div>
