@@ -25,12 +25,12 @@
 			<form action="{{ route('services.search') }}" method="get"
 				 class="flex flex-1 items-center justify-center px-2 md:mr-4">
 				<input type="search" id="" name="search"
-					  class="ml-1 flex h-9 w-[115px] flex-1 items-center rounded-2xl rounded-r-none border-gray-300 bg-gray-300 px-2 text-xs italic outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 md:h-10 md:rounded-xl md:rounded-r-none"
+					  class="ml-1 flex h-9 w-[115px] flex-1 items-center rounded-full rounded-r-none border-gray-300 bg-gray-100 px-2 text-xs italic outline-none focus:ring-1 focus:ring-gray-400 focus:ring-offset-1 md:h-10  md:rounded-r-none"
 					  placeholder="Search services" value="{{ isset($search) ? $search : '' }}" required />
 				<button type="submit"
-					   class="flex h-9 items-center rounded-2xl rounded-l-none bg-gray-300 px-1 text-white md:h-10 md:rounded-xl md:rounded-l-none md:px-4">
-					<span class="hidden md:block">Search</span>
-					<ion-icon class="text-gray-900 md:hidden font-bold px-1" name="search"></ion-icon>
+					   class="flex h-9 items-center rounded-full rounded-l-none bg-gray-200 px-1 text-white md:h-10  md:rounded-l-none md:px-4">
+					<span class="hidden md:block text-black">Search</span>
+					<ion-icon class="text-black md:hidden font-black px-2" name="search"></ion-icon>
 				</button>
 			</form>
 		@endauth

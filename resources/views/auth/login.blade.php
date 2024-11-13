@@ -46,7 +46,7 @@
 					<x-label>Password</x-label>
 					<x-input type="password" id="password" name="password" placeholder="Password" class="pr-10" />
 					<ion-icon id="togglePassword" name="eye-outline"
-						class="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer text-gray-500"></ion-icon>
+						class="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer text-gray-500 text-xl"  ></ion-icon>
 
 					<a class="text-sm font-semibold text-blue-500 hover:underline mt-1 block" href="/forgot-password">
 						Forgot password?

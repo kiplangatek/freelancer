@@ -129,8 +129,9 @@
 					</div>
 					<p class="text-sm text-gray-600 flex items-center">
 						<ion-icon name="at"></ion-icon>{{ Auth::user()->username }}</p>
-					<p class="text-sm text-gray-600 flex items-center italic">Joined
-						&nbsp;{{Auth::user()->created_at->format('M, Y')}}</p>
+					<p class="text-sm text-gray-600 flex items-center italic">Joined:
+						&nbsp;{{ Auth::user()->created_at->format('jS M, Y') }}
+
 				</div>
 				<a href="{{ route('profile') }}"
 				   class="mt-4 inline-block rounded-lg bg-blue-300 px-4 py-2 text-center text-white">
@@ -439,8 +440,6 @@
 				</div>
 			</div>
 
-
-
 			<div id="dashboard-content" :class="activeTab === 'dashboard' ? 'tab-content active' : 'tab-content'"
 				class="mt-4">
 				<h1 class="mb-4 text-2xl font-bold">Analysis</h1>
@@ -641,7 +640,7 @@
 			<div id="active-content" :class="activeTab === 'active' ? 'tab-content active' : 'tab-content'"
 				class="mt-4">
 				<h1 class="mb-4 text-2xl font-bold">Active Applications</h1>
-				<div class="mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+				<div class="mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
 					@foreach($activeApplications as $activeApplication)
 						<div class="rounded-lg shadow-md overflow-hidden bg-white mb-4 border border-gray-200 transition-shadow duration-300 hover:shadow-lg w-full mx-auto">
 							<div class="h-28 w-full overflow-hidden rounded-t-lg">
@@ -729,7 +728,6 @@
 			new Chart(earningsCtx, {
 				type: 'bar', // Base chart type
 				data: {
-					// labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'], // Month names
 					datasets: [
 						{
 							label: 'Earnings per Month (Bar)',
@@ -738,15 +736,17 @@
 							borderColor: 'rgba(255, 99, 132, 1)',
 							borderWidth: 1,
 							type: 'bar', // Explicitly setting this dataset as a bar
+							borderRadius: 10, // Set the borderRadius to make the top of bars rounded
+							borderSkipped: 'bottom', // Ensures the border is applied to all sides (including the top)
 						},
 						{
 							label: 'Earnings per Month (Line)',
-							data: data.monthlyEarnings, //
+							data: data.monthlyEarnings, // Assuming same data for line
 							borderColor: 'rgba(54, 162, 235, 1)',
-							backgroundColor: 'rgba(156,213,255,0.3)', // No background for line
+							backgroundColor: 'rgba(156,213,255,0.3)', // Light fill for line
 							fill: true, // Fill under the line
 							type: 'line', // Explicitly setting this dataset as a line
-							tension: 0.3, // Optional: Smoothness of the line
+							tension: 0.4, // Smoothness of the line
 						},
 					],
 				},
@@ -758,6 +758,7 @@
 					},
 				},
 			})
+
 
 		})
 		.catch(error => console.error('Error fetching analysis:', error))

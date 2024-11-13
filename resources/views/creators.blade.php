@@ -14,7 +14,7 @@
 						<div class="relative h-16 w-16">
 							<img src="{{ asset('storage/avatars/' . $freelancer->photo) }}"
 								alt="{{ $freelancer->name }}"
-								class="h-full w-full object-cover rounded-2xl"> <!-- Semi-rounded corners -->
+								class="h-full w-full object-cover rounded-3xl"> <!-- Semi-rounded corners -->
 						</div>
 						<!-- Freelancer Info -->
 						<div>
@@ -58,15 +58,10 @@
 					</div>
 
 					<!-- Action Buttons -->
-					<div class="flex justify-between mt-3">
-						<a href="{{ route('freelancer.services', $freelancer->id) }}">
-							<button class="bg-blue-600 text-white py-2 px-4 rounded-lg">
+					<div class="flex justify-between mt-3 w-full">
+						<a href="{{ route('freelancer.services', $freelancer->id) }}" class="w-full">
+							<button class="bg-blue-600 text-white py-2 px-4 rounded-xl w-full">
 								Catalogue
-							</button>
-						</a>
-						<a href="{{ route('chat.show', $freelancer->id) }}">
-							<button class="bg-gray-200 text-gray-800 py-2 px-4 rounded-lg">
-								Message
 							</button>
 						</a>
 					</div>

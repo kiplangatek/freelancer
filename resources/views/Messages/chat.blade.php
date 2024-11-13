@@ -4,6 +4,7 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="csrf-token" content="{{ csrf_token() }}">
 	<link rel="apple-touch-icon" sizes="180x180" href="{{ asset('storage/ui/apple-touch-icon.png') }}">
 	<link rel="icon" type="image/png" sizes="32x32" href="{{ asset('storage/ui/favicon-32x32.png') }}">
 	<link rel="icon" type="image/png" sizes="16x16" href="{{ asset('storage/ui/favicon-16x16.png') }}">
@@ -108,7 +109,8 @@
 				    }
 		@endphp
 
-		<span class="{{ $bgColor }} text-white italic font-semibold rounded-full p-1 h-6 w-6 flex items-center justify-center">
+		<span
+			class="{{ $bgColor }} text-white italic font-semibold rounded-full p-1 h-6 w-6 flex items-center justify-center">
 			{{ $firstLetter }}
 		</span>
 	</div>
@@ -264,9 +266,9 @@
 						<textarea name="message" id="message-input"
 								class="flex-grow p-2 rounded-lg border border-gray-300 focus:outline-none resize-none placeholder:italic"
 								placeholder="Type your message..." rows="1"></textarea>
-						<button type="submit" id="send-button"
-							   class="ml-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 hidden items-center">
-							<ion-icon name="send-outline" class="text-2xl"></ion-icon>
+						<button type="button" id="send-button"
+							   class="ml-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
+							<ion-icon name="send-outline" size="large"></ion-icon>
 						</button>
 						<button type="button" id="clear-file-button" class="ml-2 text-red-500">
 							<ion-icon name="trash" class="text-xl"></ion-icon>
@@ -284,12 +286,123 @@
 </div>
 
 
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
+	// Function to update the chat interface with new messages
+	function updateChatInterface(messages) {
+		const chatBox = document.getElementById('chat-box')
+		chatBox.innerHTML = '' // Clear existing messages
+
+		messages.forEach(message => {
+			// Determine if the message is from the authenticated user
+			const isSender = message.sender_id === {{ auth()->id() }};
+			const messageElement = document.createElement('div')
+			messageElement.classList.add('flex', 'mb-2', 'items-end')
+
+			if (isSender) {
+				messageElement.classList.add('justify-end')
+				messageElement.innerHTML = `
+                    <div class="bg-blue-400/50 text-black p-2 rounded-2xl rounded-br-none shadow-sm max-w-[80%] w-fit md:max-w-[50%]">
+                        ${message.file ? getFileHTML(message.file) : ''}
+                        <p class="text-sm mr-2">${message.message}</p>
+                        <div class="flex items-center justify-end">
+                            <small class="block text-right text-[9px]">${new Date(message.created_at).toLocaleTimeString([], {
+					hour: '2-digit',
+					minute: '2-digit',
+				})}</small>
+                            ${message.status === 'unread' ? '<ion-icon name="checkmark" class="text-gray-600 ml-1"></ion-icon>' : '<ion-icon name="checkmark-done" class="text-blue-700 font-bold ml-1"></ion-icon>'}
+                        </div>
+                    </div>
+                `
+			} else {
+				messageElement.classList.add('justify-start')
+				messageElement.innerHTML = `
+                    <img src="{{ asset('storage/avatars/' . $user->photo) }}" alt="{{ $user->name }}" class="h-8 w-8 object-cover rounded-full mr-2">
+                    <div class="bg-green-100 text-gray-800 p-2 rounded-2xl rounded-bl-none shadow-sm max-w-[80%] w-fit">
+                        ${message.file ? getFileHTML(message.file) : ''}
+                        <p class="text-sm">${message.message}</p>
+                        <small class="block text-right text-[9px]">${new Date(message.created_at).toLocaleTimeString([], {
+					hour: '2-digit',
+					minute: '2-digit',
+				})}</small>
+                    </div>
+                `
+			}
+			chatBox.appendChild(messageElement)
+		})
+	}
+
+	// Function to generate HTML for the file attachment
+	function getFileHTML(file) {
+		const fileExtension = file.split('.').pop().toLowerCase()
+		let fileHTML = ''
+
+		if (['jpeg', 'jpg', 'png', 'gif'].includes(fileExtension)) {
+			fileHTML += `<img src="{{ asset('storage/messages/') }}/${file}" alt="Message Image" class="mt-2 max-w-full rounded-lg border border-gray-300" />`
+		} else if (fileExtension === 'pdf') {
+			fileHTML += `<a href="{{ asset('storage/messages/') }}/${file}" target="_blank" class="flex items-center text-blue-500"><ion-icon name="document-outline" size="large"></ion-icon><span class="ml-2">${file}</span></a>`
+		} else if (['doc', 'docx'].includes(fileExtension)) {
+			fileHTML += `<a href="{{ asset('storage/messages/') }}/${file}" target="_blank" class="flex items-center text-blue-500"><ion-icon name="document-text-outline" size="large"></ion-icon><span class="ml-2">${file}</span></a>`
+		} else if (fileExtension === 'rar') {
+			fileHTML += `<a href="{{ asset('storage/messages/') }}/${file}" target="_blank" class="flex items-center text-blue-500"><ion-icon name="library-outline" size="large"></ion-icon><span class="ml-2">${file}</span></a>`
+		} else {
+			fileHTML += `<a href="{{ asset('storage/messages/') }}/${file}" target="_blank" class="flex items-center text-blue-500"><ion-icon name="document-outline" size="large"></ion-icon><span class="ml-2">${file}</span></a>`
+		}
+
+		return fileHTML
+	}
+
+	// Polling every 5 seconds for new messages
+	setInterval(() => {
+		axios.get('/fetch-messages') // Your defined route for fetching messages
+			.then(response => {
+				updateChatInterface(response.data)
+			})
+			.catch(error => {
+				console.error('Error fetching messages:', error)
+			})
+	}, 10) // Adjust the interval as needed
+</script>
+
+
+<script>
+	axios.defaults.headers.common['X-CSRF-TOKEN'] = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+
+	const form = document.querySelector('form')
 	const fileInput = document.getElementById('file-input')
 	const messageInput = document.getElementById('message-input')
 	const imagePreviewContainer = document.getElementById('image-preview')
-	const sendButton = document.getElementById('send-button')
 	const clearFileButton = document.getElementById('clear-file-button')
+	const sendButton = document.getElementById('send-button') // Include the send button
+
+	document.getElementById('send-button').addEventListener('click', function() {
+		const messageInput = document.getElementById('message-input')
+		const fileInput = document.getElementById('file-input')
+		const receiverId = document.querySelector('input[name="receiver_id"]').value
+
+		const formData = new FormData()
+		formData.append('message', messageInput.value)
+		formData.append('receiver_id', receiverId)
+		if (fileInput.files.length > 0) {
+			formData.append('file', fileInput.files[0])
+		}
+
+		axios.post('/messages', formData, {
+			headers: {
+				'X-Requested-With': 'XMLHttpRequest',
+				'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+			},
+		})
+			.then(function(response) {
+				// Clear the message input and handle success (e.g., append message to chat)
+				messageInput.value = ''
+				// Optionally, update the chat interface with the new message
+			})
+			.catch(function(error) {
+				console.error('Failed to send message:', error)
+				alert('Failed to send message. Please try again.')
+			})
+	})
 
 	// Function to update the UI based on the message and file inputs
 	function updateUI() {
@@ -301,14 +414,6 @@
 			sendButton.classList.remove('hidden')
 			sendButton.classList.add('flex')
 		}
-	}
-
-	// Function to clear the selected file
-	function clearFile() {
-		fileInput.value = ''
-		imagePreviewContainer.innerHTML = ''
-		messageInput.value = ''
-		updateUI()
 	}
 
 	// File input change event
@@ -333,7 +438,7 @@
 				}
 
 				reader.readAsDataURL(file)
-				messageInput.value = `${file.name}`
+				messageInput.value = `${file.name}` // Set the message input to the file name
 			} else {
 				const fileIcon = document.createElement('span')
 				fileIcon.className = 'text-gray-500' // Adjust styles as needed
@@ -353,20 +458,15 @@
 		updateUI() // Update UI to show/hide the send button
 	})
 
-
-	function scrollToBottom() {
-		const chatBox = document.getElementById('chat-box')
-		chatBox.scrollTop = chatBox.scrollHeight
+	// Function to clear the selected file and reset the form
+	function clearFile() {
+		fileInput.value = ''
+		imagePreviewContainer.innerHTML = ''
+		messageInput.value = ''
+		updateUI() // Update UI to hide the send button
 	}
-
-	// Call scrollToBottom when the page loads
-	window.onload = function() {
-		scrollToBottom()
-	}
-
-	// Scroll to bottom when the textarea is focused
-	document.getElementById('message-input').addEventListener('focus', scrollToBottom)
 </script>
+
 </body>
 
 </html>

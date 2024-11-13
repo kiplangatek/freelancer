@@ -3,6 +3,7 @@
 	namespace App\Http\Controllers;
 
 	use App\Models\Message;
+	use App\Events\MessageEvent;
 	use App\Models\User;
 	use Illuminate\Http\Request;
 	use Illuminate\Support\Facades\Auth;
@@ -37,6 +38,22 @@
 			return view('messages.index', compact('chats', 'unreadCounts'));
 		}
 
+		public function fetchMessages(Request $request)
+		{
+			$userId = Auth::user()->id;
+
+			// Retrieve messages where the user is either the sender or the receiver
+			$messages = Message::where(function ($query) use ($userId, $user) {
+				$query->where('sender_id', $userId)->where('receiver_id', $user->id);
+			})
+				->orWhere(function ($query) use ($userId, $user) {
+					$query->where('sender_id', $user->id)->where('receiver_id', $userId);
+				})
+				->orderBy('created_at', 'asc')  // Order by ascending to show older messages first
+				->get();
+		}
+
+
 		public function show(User $user)
 		{
 			$userId = Auth::user()->id;
@@ -61,50 +78,24 @@
 
 		public function store(Request $request)
 		{
-			// Validate the input
 			$request->validate([
+				'message' => 'required|string',
 				'receiver_id' => 'required|exists:users,id',
-				'message' => 'nullable|string|max:100000',
-				'file' => 'nullable|mimes:jpeg,png,jpg,gif,pdf,doc,docx,rar,m4a|max:5120',
+				'file' => 'nullable|file|mimes:jpeg,jpg,png,gif,pdf,doc,docx,rar|max:2048',
 			]);
 
-			// Create a new message instance
+			// Store message logic
 			$message = new Message();
-			$message->sender_id = Auth::user()->id;
-			$message->receiver_id = $request->receiver_id;
-
-			// Handle the uploaded file, if present
+			$message->message = $request->input('message');
+			$message->receiver_id = $request->input('receiver_id');
+			// Handle file upload
 			if ($request->hasFile('file')) {
-				$file = $request->file('file');
-				$extension = $file->getClientOriginalExtension();
-
-				// Determine file name based on file type
-				if (in_array($extension, ['jpeg', 'png', 'jpg', 'gif'])) {
-					// For image files, use the timestamp as the filename
-					$timestamp = now()->format('YmdHis');
-					$filename = "{$timestamp}.{$extension}";
-				} else {
-					// For other file types, use the original name
-					$filename = $file->getClientOriginalName();
-				}
-
-				// Store the file
-				$file->storeAs('messages', $filename, 'public');
-				$message->file = $filename;
+				$message->file = $request->file('file')->store('messages');
 			}
+			$message->sender_id = auth()->id();
+			$message->save();
 
-			// Save the message text if available
-			if ($request->filled('message')) {
-				$message->message = $request->message;
-			}
-
-			// Ensure at least a message or a file is provided before saving
-			if ($message->message || $message->file) {
-				$message->save(); // Save the message
-				return redirect()->back()->with('success', 'Message sent successfully!');
-			} else {
-				return redirect()->back()->withErrors(['message' => 'Please provide either a message or a file.']);
-			}
+			return response()->json(['success' => true, 'message' => $message]);
 		}
 
 

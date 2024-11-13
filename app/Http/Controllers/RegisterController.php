@@ -41,7 +41,7 @@
 				],
 				'email' => ['required', 'email', 'max:254', 'unique:users,email'],
 				'usertype' => ['required'],
-				'photo' => ['required', 'mimes:png,jpg,webp,jpeg'],
+				'photo' => ['nullable', 'mimes:png,jpg,webp,jpeg'],
 				'password' => ['required', Password::min(8), 'confirmed'],
 			]);
 

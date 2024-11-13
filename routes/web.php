@@ -59,6 +59,7 @@
 		Route::get('/chat/{user}', [MessageController::class, 'show'])->name('chat.show');
 		Route::post('/messages', [MessageController::class, 'store'])->name('messages.store');
 		Route::get('/messages', [MessageController::class, 'index'])->name('messages.index');
+		Route::get('/fetch-messages', [MessageController::class, 'fetchMessages'])->name('fetch.messages');
 		Route::patch('/applications/{id}', [ApplicationController::class, 'approveCompleted'])->name('applications.approve');
 
 	});

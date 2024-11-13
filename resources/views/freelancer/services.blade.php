@@ -93,7 +93,7 @@
 					</div>
 				</div>
 			@empty
-				<p class="text-center text-gray-600">No services found for this freelancer.</p>
+				<p class="text-center text-gray-600">This user hasn't created any service.</p>
 			@endforelse
 		</div>
 
@@ -105,31 +105,12 @@
 
 	@if ($freelancer->ratings->isNotEmpty())
 		<div class="mt-4 px-4">
-			<h2 class="mb-2 text-xl font-semibold">Ratings and Comments</h2>
-			{{--			<p class="mb-2 ml-2.5 text-lg font-bold">--}}
-			{{--				@if ($averageRating)--}}
-			{{--					{{ number_format($averageRating, 1) }} / 5--}}
-			{{--					<span class="text-yellow-500">--}}
-			{{--                        @php--}}
-			{{--					    $roundedRating = round($averageRating * 2) / 2; // Round to the nearest half star--}}
-			{{--				    @endphp--}}
-			{{--						@for ($i = 1; $i <= 5; $i++)--}}
-			{{--							@if ($i <= floor($roundedRating))--}}
-			{{--								<ion-icon name="star"></ion-icon>--}}
-			{{--							@elseif ($i == ceil($roundedRating) && $roundedRating - floor($roundedRating) > 0)--}}
-			{{--								<ion-icon name="star-half-outline"></ion-icon>--}}
-			{{--							@else--}}
-			{{--								<ion-icon name="star-outline"></ion-icon>--}}
-			{{--							@endif--}}
-			{{--						@endfor--}}
-			{{--                     </span>--}}
-			{{--				@endif--}}
-			{{--			</p>--}}
+			<h2 class="mb-2 text-xl font-semibold">Ratings</h2>
 			<div class="space-y-3">
 				@foreach ($freelancer->ratings as $rating)
 					@php
 						$ratingValue = $rating->rating;
-						$ratingClass = $ratingValue >= 4 ? 'text-green-600' : ($ratingValue == 3 ? 'text-gray-600' : 'text-red-600');
+							 $ratingClass = $ratingValue >= 4 ? 'text-green-600' : ($ratingValue == 3 ? 'text-gray-600' : 'text-red-600');
 					@endphp
 
 					<div class="flex items-start p-2 border-b-2 last:border-b-0">
@@ -155,9 +136,9 @@
 									@endfor
                     </span>
 							</div>
-							<p class="text-sm font-bold italic text-gray-700">{{ $rating->service->title }}</p>
+							<p class="text-sm font-bold  text-gray-700">{{ $rating->service->title }}</p>
 							<p class="text-sm text-gray-700">{{ $rating->comments }}</p>
-							<p class="text-xs text-gray-500 italic">{{ $rating->created_at->format('M d, Y, H:i') }}</p>
+							<p class="text-xs text-gray-500 italic">{{ $rating->created_at->format('M d, Y') }}</p>
 						</div>
 					</div>
 				@endforeach

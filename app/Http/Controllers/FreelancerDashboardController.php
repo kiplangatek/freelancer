@@ -38,6 +38,7 @@
 				// Get all ratings for this freelancer
 				$ratings = Rating::where('freelancer_id', $freelancer->id)->get();
 
+
 				// Calculate average rating
 				$averageRating = $ratings->avg('rating');
 
@@ -146,7 +147,7 @@
 					'totalEarnings' => $totalEarningsWithDeduction,
 					'monthlyEarnings' => $earningsPerMonth,
 					'averageSpending' => $averageSpending,
-					'percentageChange' => round($percentageChange, 2),  // Ensure it's passed correctly
+					'percentageChange' => round($percentageChange, 0),  // Ensure it's passed correctly
 				]);
 
 
