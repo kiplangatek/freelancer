@@ -1,4 +1,4 @@
-# Freelancer Platform
+# FCS
 
 A Laravel-based service exchange platform where clients hire freelancers by category and skill, track applications, and manage ratings, chats, and more.
 
