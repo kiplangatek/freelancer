@@ -54,12 +54,6 @@
 		public function getAnalysis(Request $request)
 		{
 			try {
-
-
-				$currentMonth = Carbon::now()->format('m');
-				$previousMonth = Carbon::now()->subMonth()->format('m');
-
-
 				$user = Auth::user();
 				$freelancerId = $user->id;
 
@@ -95,38 +89,29 @@
 
 				$totalEarningsWithDeduction = round($totalEarnings * 0.90, 2);
 
-				// Using strftime for SQLite or a similar database
+				// Earnings grouped by YYYY-MM (SQLite strftime)
 				$monthlyEarnings = Application::where('applications.freelancer_id', $freelancerId)
 					->where('applications.status', 1)
 					->where('applications.client_status', 1)
-					->selectRaw("strftime('%m', applications.updated_at) as month, SUM(services.price) as earnings")
+					->whereNotNull('applications.updated_at')
 					->leftJoin('services', 'applications.service_id', '=', 'services.id')
-					->groupByRaw("strftime('%m', applications.updated_at)")
-					->pluck('earnings', 'month')->toArray();
+					->selectRaw("strftime('%Y-%m', applications.updated_at) as period, SUM(services.price) as earnings")
+					->groupByRaw("strftime('%Y-%m', applications.updated_at)")
+					->pluck('earnings', 'period')
+					->toArray();
 
-
-				$earningsPerMonth = array_fill(1, 12, 0); // Initialize 1 through 12 for each month
-				foreach ($monthlyEarnings as $month => $earnings) {
-					$earningsPerMonth[(int)$month] = round($earnings * 0.90, 2); // Apply 10% deduction
+				// Normalize with deduction
+				$earningsPerMonth = [];
+				foreach ($monthlyEarnings as $period => $earnings) {
+					$earningsPerMonth[$period] = round($earnings * 0.90, 2);
 				}
 
-				$registrationDate = $user->created_at;
-				$now = now();
-				// Calculate the number of months since registration
-				$monthsFromRegistration = max(1, $registrationDate->diffInMonths($now)); // Avoid division by zero
-				// Round up months from registration
-				$monthsFromRegistration = ceil($monthsFromRegistration);
-				// Calculate the average spending
-				$averageSpending = round($mySpend / $monthsFromRegistration, 1);
+				// Current + previous month (YYYY-MM format)
+				$currentMonth = Carbon::now()->format('Y-m');
+				$previousMonth = Carbon::now()->subMonth()->format('Y-m');
 
-				// Log the values
-				Log::info('Months From Registration: ' . $monthsFromRegistration);
-				Log::info('Average Spending: ' . $averageSpending);
-
-
-				// Get current and previous month earnings
-				$currentMonthEarnings = isset($monthlyEarnings[$currentMonth]) ? $monthlyEarnings[$currentMonth] : 0;
-				$previousMonthEarnings = isset($monthlyEarnings[$previousMonth]) ? $monthlyEarnings[$previousMonth] : 0;
+				$currentMonthEarnings = $earningsPerMonth[$currentMonth] ?? 0;
+				$previousMonthEarnings = $earningsPerMonth[$previousMonth] ?? 0;
 
 				if ($previousMonthEarnings == 0) {
 					$percentageChange = $currentMonthEarnings > 0 ? 100 : 0;
@@ -134,8 +119,10 @@
 					$percentageChange = (($currentMonthEarnings - $previousMonthEarnings) / $previousMonthEarnings) * 100;
 				}
 
-				// Log the percentage change
-				Log::info('Percentage change in earnings: ' . $percentageChange . '%');
+				// Average monthly spend since registration
+				$registrationDate = $user->created_at;
+				$monthsFromRegistration = max(1, $registrationDate->diffInMonths(now()));
+				$averageSpending = round($mySpend / $monthsFromRegistration, 1);
 
 				return response()->json([
 					'serviceCount' => $serviceCount,
@@ -145,14 +132,13 @@
 					'completedRequests' => $completedRequests,
 					'myCompletedRequests' => $myCompletedRequests,
 					'totalEarnings' => $totalEarningsWithDeduction,
-					'monthlyEarnings' => $earningsPerMonth,
+					'currentMonthEarnings'=>$currentMonthEarnings,
+					'monthlyEarnings' => $earningsPerMonth, // keyed by YYYY-MM
 					'averageSpending' => $averageSpending,
-					'percentageChange' => round($percentageChange, 0),  // Ensure it's passed correctly
+					'percentageChange' => round($percentageChange, 0),
 				]);
 
-
 			} catch (\Exception $e) {
-				// Log any exception that occurs during the execution
 				Log::error('Error in getAnalysis method:', ['error' => $e->getMessage()]);
 				return response()->json(['error' => 'Unable to fetch analysis data'], 500);
 			}

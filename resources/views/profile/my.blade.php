@@ -473,7 +473,7 @@
 										<ion-icon name="analytics-outline"
 												class="text-green-600 text-2xl mb-2"></ion-icon>
 										<h3 class="text-sm font-bold text-gray-700">Avg. Monthly Spend</h3>
-										<p id="averageSpend" class="text-2xl font-bold text-green-600">
+										<p id="averageSpend" cla`ss="text-2xl font-bold text-green-600">
 											Ksh
 											15,000</p>
 									</div>
@@ -481,7 +481,7 @@
 								<div class="bg-white shadow-lg rounded-lg p-2  w-full  text-center">
 									<div class="flex flex-col items-center">
 										<ion-icon name="checkmark-done-circle-outline"
-												class="text-green-600 text-2xl mb-2"></ion-icon>
+												n class="text-green-600 text-2xl mb-2"></ion-icon>
 										<h3 class="text-sm font-bold text-gray-700">Completed</h3>
 										<p id="completed" class="text-2xl font-bold text-green-600">
 											19</p>
@@ -589,8 +589,10 @@
 											<!-- Current Month Earnings -->
 											<span id="currentMonthEarnings"
 												 class="text-lg font-semibold text-indigo-600">
-												 Ksh. <span x-text="currentMonthEarnings"></span>
-											  </span>
+											  Ksh. <span x-text="Number(currentMonthEarnings).toLocaleString('en-KE')"></span>
+											</span>
+
+
 										</div>
 
 										<!-- Percentage Change (Absolute Position) -->
@@ -724,40 +726,42 @@
 			document.getElementById('avgSpending').textContent = `Ksh. ${montlyFormatted}`
 
 			// Bar Chart for earnings per month
+			// Extract labels (YYYY-MM) and values
+			const labels = Object.keys(data.monthlyEarnings || {})
+			const values = Object.values(data.monthlyEarnings || {})
+
 			const earningsCtx = document.getElementById('earningsChart').getContext('2d')
 			new Chart(earningsCtx, {
-				type: 'bar', // Base chart type
+				type: 'bar',
 				data: {
+					labels,
 					datasets: [
 						{
 							label: 'Earnings per Month (Bar)',
-							data: data.monthlyEarnings, // Assuming data.monthlyEarnings contains earnings for each month
+							data: values,
 							backgroundColor: 'rgba(255, 99, 132, 0.2)',
 							borderColor: 'rgba(255, 99, 132, 1)',
 							borderWidth: 1,
-							type: 'bar', // Explicitly setting this dataset as a bar
-							borderRadius: 10, // Set the borderRadius to make the top of bars rounded
-							borderSkipped: 'bottom', // Ensures the border is applied to all sides (including the top)
+							type: 'bar',
+							borderRadius: 10,
+							borderSkipped: 'bottom',
 						},
 						{
 							label: 'Earnings per Month (Line)',
-							data: data.monthlyEarnings, // Assuming same data for line
+							data: values,
 							borderColor: 'rgba(54, 162, 235, 1)',
-							backgroundColor: 'rgba(156,213,255,0.3)', // Light fill for line
-							fill: true, // Fill under the line
-							type: 'line', // Explicitly setting this dataset as a line
-							tension: 0.4, // Smoothness of the line
+							backgroundColor: 'rgba(156,213,255,0.3)',
+							fill: true,
+							type: 'line',
+							tension: 0.4,
 						},
 					],
 				},
 				options: {
-					scales: {
-						y: {
-							beginAtZero: true,
-						},
-					},
+					scales: { y: { beginAtZero: true } },
 				},
 			})
+
 
 
 		})

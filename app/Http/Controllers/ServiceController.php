@@ -93,9 +93,7 @@
 				->get();
 
 			// Group messages by the other user's ID
-			$chats = $messages->groupBy(function ($message) use ($userId) {
-				return $message->sender_id === $userId ? $message->receiver_id : $message->sender_id;
-			});
+			$chats = $messages->groupBy(fn($message) => $message->sender_id === $userId ? $message->receiver_id : $message->sender_id);
 
 			// Initialize the unread count
 			$unreadCount = 0;
@@ -197,8 +195,8 @@
 				$newImage = date('YmdHis') . "." . $image->getClientOriginalExtension();
 
 				// Check if there is an existing image and delete it
-				if ($service->image && file_exists(public_path($destinationPath . $service->image))) {
-					unlink(public_path($destinationPath . $service->image));
+				if ($service->image && file_exists(public_path("{$destinationPath}{$service->image}"))) {
+					unlink(public_path("{$destinationPath}{$service->image}"));
 				}
 
 				// Move the new image to the storage

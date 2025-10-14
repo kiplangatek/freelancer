@@ -38,7 +38,7 @@
 			return view('messages.index', compact('chats', 'unreadCounts'));
 		}
 
-		public function fetchMessages(Request $request)
+		public function fetchMessages(Request $request , User $user)
 		{
 			$userId = Auth::user()->id;
 

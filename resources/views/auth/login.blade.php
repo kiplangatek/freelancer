@@ -34,13 +34,13 @@
 						<x-input type="email" name="email" placeholder="Email Address" class="pl-10" />
 						<x-form-error name="email" />
 					</div>
-					@if ($errors->any())
-						<div class="mt-0.5 text-sm font-medium italic text-red-500">
-							@foreach ($errors->all() as $error)
-								<p>{{ $error }}</p>
-							@endforeach
-						</div>
-					@endif
+{{--					@if ($errors->any())--}}
+{{--						<div class="mt-0.5 text-sm font-medium italic text-red-500">--}}
+{{--							@foreach ($errors->all() as $error)--}}
+{{--								<p>{{ $error }}</p>--}}
+{{--							@endforeach--}}
+{{--						</div>--}}
+{{--					@endif--}}
 				</div>
 				<div class="relative">
 					<x-label>Password</x-label>
