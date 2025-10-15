@@ -34,7 +34,7 @@
 			);
 
 			// Send the email with the token
-			Mail::to($request->email)->send(new ResetPasswordMail($token));
+			Mail::to($request->email)->send(new ResetPasswordMail($token)); 
 
 			return back()->with('status', 'Password reset link sent! Check your email.');
 		}

@@ -62,6 +62,73 @@
 			</div>
 		</div>
 
+		@php
+    $latestTimer = \App\Models\Timer::orderBy('expiry_datetime', 'desc')->first();
+@endphp
+
+@if ($latestTimer && \Carbon\Carbon::parse($latestTimer->expiry_datetime)->isFuture())
+<section class="relative bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white rounded-2xl shadow-xl mx-6 md:mx-12 mb-10 py-10 text-center overflow-hidden">
+    <div class="relative z-10">
+        <h2 class="text-3xl md:text-4xl font-extrabold mb-4 animate-pulse">
+            🚀 {{ $latestTimer->title }}
+        </h2>
+        <p class="text-lg mb-6">
+            Offer ends in:
+        </p>
+
+        <!-- Countdown Timer -->
+        <div id="countdown" 
+             class="flex justify-center space-x-6 text-2xl font-semibold bg-white bg-opacity-20 rounded-xl px-6 py-4 w-fit mx-auto">
+            <div><span id="days">00</span><span class="block text-sm">Days</span></div>
+            <div><span id="hours">00</span><span class="block text-sm">Hours</span></div>
+            <div><span id="minutes">00</span><span class="block text-sm">Minutes</span></div>
+            <div><span id="seconds">00</span><span class="block text-sm">Seconds</span></div>
+        </div>
+
+        <p class="mt-6 text-sm italic opacity-80">
+            Hurry up before time runs out!
+        </p>
+    </div>
+
+    <div class="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent blur-3xl"></div>
+</section>
+
+<script>
+    (function() {
+        const expiryDate = new Date("{{ $latestTimer->expiry_datetime }}").getTime();
+        const daysEl = document.getElementById("days");
+        const hoursEl = document.getElementById("hours");
+        const minutesEl = document.getElementById("minutes");
+        const secondsEl = document.getElementById("seconds");
+        const countdownContainer = document.getElementById("countdown");
+
+        function update() {
+            const now = new Date().getTime();
+            const distance = expiryDate - now;
+
+            if (distance <= 0) {
+                clearInterval(timerInterval);
+                countdownContainer.innerHTML = "<span class='text-xl font-bold'>⏰ Offer Ended!</span>";
+                return;
+            }
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            daysEl.innerText = String(days).padStart(2, "0");
+            hoursEl.innerText = String(hours).padStart(2, "0");
+            minutesEl.innerText = String(minutes).padStart(2, "0");
+            secondsEl.innerText = String(seconds).padStart(2, "0");
+        }
+
+        update();
+        const timerInterval = setInterval(update, 1000);
+    })();
+</script>
+@endif
+
 		<!-- Why Choose Us Section -->
 		<div class="mb-10 px-6 py-10 md:px-12">
 			<h2 class="mb-6 text-3xl font-black text-gray-800 text-center">Why Choose Us?</h2>

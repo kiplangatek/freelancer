@@ -10,6 +10,7 @@
 	use App\Models\Message;
 	use App\Models\Rating;
 	use App\Models\Service;
+	use App\Models\Timer;
 	use App\Models\User;
 	use Carbon\Carbon;
 	use Illuminate\Http\RedirectResponse;
@@ -35,6 +36,7 @@
 
 			// Fetch all
 			$ratings = Rating::all();
+			$timers = Timer::all();
 			$categories = Category::all();
 			$services = Service::withCount('applications as active_applications_count')->get();
 
@@ -43,7 +45,7 @@
 				->doesntHave('services')
 				->get();
 
-			return view('admin.reports', compact('users', 'ratings', 'categories', 'services', 'inactiveFreelancers'));
+			return view('admin.reports', compact('users', 'ratings', 'timers', 'categories', 'services', 'inactiveFreelancers'));
 		}
 
 

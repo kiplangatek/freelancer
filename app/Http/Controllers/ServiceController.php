@@ -123,7 +123,7 @@
 				'price' => ['required'],
 				'details' => ['required'],
 				'category_id' => ['required'],
-				'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:2048'],
+				'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:10240'],
 			]);
 
 			$details = $request->all();

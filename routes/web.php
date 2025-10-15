@@ -13,6 +13,7 @@ use App\Http\Controllers\RatingController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\MessageController;
+use App\Http\Controllers\TimerController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -62,6 +63,7 @@ Route::middleware(['auth'])->group(function () {
 });
 
 //Admin Routes
+
 Route::middleware(['auth', 'admin'])->group(function () {
 	Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
 	Route::patch('freelancers/{id}/verify', [AdminController::class, 'verify'])->name('admin.verify');
@@ -75,7 +77,12 @@ Route::middleware(['auth', 'admin'])->group(function () {
 	Route::patch('/admin/services/{id}/feature', [AdminController::class, 'feature'])->name('admin.feature');
 	Route::patch('/admin/services/{id}/removeFeature', [AdminController::class, 'removeFeature'])->name('admin.removeFeature');
 	Route::post('/admin/username', [AdminController::class, 'username'])->name('admin.username');
+
+    Route::post('/timers', [TimerController::class, 'store'])->name('admin.timers.store');
+    Route::patch('/timers/{id}', [TimerController::class, 'update'])->name('admin.timers.update');
+    Route::delete('/timers/{id}', [TimerController::class, 'destroy'])->name('admin.timers.delete');
 });
+
 
 //Freelancer Routes
 Route::middleware(['auth', 'freelancer'])->group(function () {

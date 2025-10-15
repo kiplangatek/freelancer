@@ -83,6 +83,9 @@
 			<a @click.prevent="activeTab = 'categories'; window.history.pushState({}, '', '?activeTab=categories')"
 			   :class="{ 'bg-blue-500': activeTab === 'categories' }"
 			   class="mt-4 block rounded-xl px-4 py-2 text-sm font-medium">Categories</a>
+			<a @click.prevent="activeTab = 'timers'; window.history.pushState({}, '', '?activeTab=timers')"
+			   :class="{ 'bg-blue-500': activeTab === 'timers' }"
+			   class="mt-4 block rounded-xl px-4 py-2 text-sm font-medium">Countdown Timers</a>
 		</nav>
 
 	</div>
@@ -464,6 +467,120 @@
 			</section>
 		</div>
 
+		<!-- Timers Tab Content -->
+		<div x-show="activeTab === 'timers'" class="px-4" x-cloak>
+			<section class="w-full py-1">
+				<div class="container mx-auto mt-1 px-4">
+					<h1 class="mb-6 text-left text-3xl font-bold">Timers</h1>
+
+					<div class="overflow-x-auto">
+						<table class="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
+							<thead class="bg-gray-800 text-white">
+								<tr>
+									<th class="px-4 py-3 text-xs md:text-sm">Title</th>
+									<th class="px-4 py-3 text-xs md:text-sm">Image</th>
+									<th class="px-4 py-3 text-xs md:text-sm">Expires At</th>
+									<th class="px-4 py-3 text-xs md:text-sm">Actions</th>
+								</tr>
+							</thead>
+							<tbody>
+								@foreach($timers as $timer)
+								<tr class="border-b text-xs md:text-sm">
+									<td class="px-4 py-3">{{ $timer->title }}</td>
+									<td class="px-4 py-3">
+										@if($timer->image)
+											<img src="{{ asset('storage/timers/' . $timer->image) }}" class="w-16 h-16 object-cover rounded">
+										@else
+											<span class="text-gray-500">No image</span>
+										@endif
+									</td>
+									<td class="px-4 py-3">
+										<div 
+											x-data="countdownTimer('{{ $timer->expiry_datetime }}')" 
+											x-init="init()"
+											class="flex flex-col">
+											<span class="text-gray-700">{{ $timer->expiry_datetime }}</span>
+											<span x-text="display" 
+												:class="expired ? 'text-red-600 font-semibold' : 'text-green-600 font-medium'">
+											</span>
+										</div>
+									</td>
+
+									<td class="px-4 py-3">
+										<form action="{{ route('admin.timers.delete', $timer->id) }}" method="POST">
+											@csrf
+											@method('DELETE')
+											<button class="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-500">
+												Delete
+											</button>
+										</form>
+									</td>
+								</tr>
+								@endforeach
+							</tbody>
+						</table>
+					</div>
+
+					<!-- Create Timer Button -->
+					<div x-data="{ openTimerForm: false }">
+						<button @click="openTimerForm = true"
+							class="mt-6 rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-600">
+							Create Timer
+						</button>
+
+						<!-- Modal Form -->
+						<div x-show="openTimerForm" @click.away="openTimerForm = false"
+							class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+							<div class="w-full max-w-md rounded-lg bg-white p-6 shadow-lg">
+								<h2 class="mb-4 text-lg font-bold">Create New Timer</h2>
+								<form action="{{ route('admin.timers.store') }}" method="POST" enctype="multipart/form-data">
+									@csrf
+									<div class="mb-4">
+										<label class="block text-sm font-medium text-gray-700">Title</label>
+										<input type="text" name="title" required
+											class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2">
+									</div>
+									<div class="mb-4">
+										<label class="block text-sm font-medium text-gray-700">Image</label>
+										<input type="file" name="image"
+											class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2">
+									</div>
+									<div class="mb-4">
+										<label class="block text-sm font-medium text-gray-700">Category</label>
+										<select name="category_id" required
+											class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 bg-white">
+											<option value="">-- Select Category --</option>
+											@foreach ($categories as $category)
+												<option value="{{ $category->id }}">{{ $category->name }}</option>
+											@endforeach
+										</select>
+									</div>
+
+									<div class="mb-4">
+										<label class="block text-sm font-medium text-gray-700">Expires At</label>
+										<input type="datetime-local" name="expiry_datetime" required
+											class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2">
+									</div>
+									<div class="flex justify-end">
+										<button type="submit"
+											class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+											Create
+										</button>
+										<button type="button" @click="openTimerForm = false"
+											class="ml-2 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
+											Cancel
+										</button>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+
+				</div>
+			</section>
+		</div>
+
+
 		<!-- Inactive Freelancers Tab Content -->
 		<div x-show="activeTab === 'inactive-freelancers'" class="px-4" x-cloak>
 			<section class="w-full py-1">
@@ -531,6 +648,41 @@
 		form.submit()
 	}
 </script>
+
+<script>
+document.addEventListener('alpine:init', () => {
+    Alpine.data('countdownTimer', (expiryTime) => ({
+        expiry: new Date(expiryTime).getTime(),
+        display: '',
+        expired: false,
+
+        init() {
+            this.updateCountdown();
+            this.timer = setInterval(() => this.updateCountdown(), 1000);
+        },
+
+        updateCountdown() {
+            const now = new Date().getTime();
+            const distance = this.expiry - now;
+
+            if (distance <= 0) {
+                this.display = 'Expired';
+                this.expired = true;
+                clearInterval(this.timer);
+                return;
+            }
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            this.display = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+        }
+    }));
+});
+</script>
+
 </body>
 
 </html>

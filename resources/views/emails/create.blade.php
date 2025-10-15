@@ -86,7 +86,7 @@
 			it's important to create at least one service.</p>
 		<p>Creating a service is easy and helps you showcase your skills to potential clients. Don’t miss out on
 			opportunities to grow your freelance business!</p>
-		<a href="http://freelancer.test/my" class="btn">Create Service Now</a>
+		<a href="{{ url('/my')}}" class="btn" >Create Service Now</a>
 	</div>
 	<div class="footer">
 		<p>If you have any questions or need assistance, feel free to contact our support team.</p>
